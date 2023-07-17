@@ -52,13 +52,13 @@ export default defineComponent({
 }
 
 main {
-  --bg-primario: #fff;
+  --bg-primario: aliceblue;
   --texto-primario: #000;
 }
 
 main.modo-escuro {
   --bg-primario: #496678;
-  --texto-primario: #ddd;
+  --texto-primario: #ff261b;
 }
 
 .conteudo {

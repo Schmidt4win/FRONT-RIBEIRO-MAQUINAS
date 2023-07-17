@@ -20,7 +20,7 @@
         </li>
         <li>
           <RouterLink to="/filtro" class="link">
-            <i class="fas fa-users"></i> Cliente
+            <i class="fa-sharp fa-solid fa-filter"></i> Filtro
           </RouterLink>
         </li>
       </ul>

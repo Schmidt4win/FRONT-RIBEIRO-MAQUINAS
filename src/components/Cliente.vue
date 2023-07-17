@@ -1,93 +1,69 @@
 <template>
-  <div class="page-container">
-    <div class="search-container">
-      <input
-        class="input"
-        type="text"
-        v-model="searchQuery"
-        placeholder="Procure pelo nome do cliente"
-      />
+  <div class="mr-3 page-container">
+    <div class=" search-container">
+      <input class="input filtro box" type="text" v-model="searchQuery"
+        placeholder="Procure pelo nome do cliente, valor, cidade, etc..." />
     </div>
     <div class="client-container">
-      <Box v-for="cliente in filteredClientes" :key="cliente._id">
+      <Box class="box-container" v-for="cliente in filteredClientes" :key="cliente._id">
         <div class="columns">
           <div class="column">
             <strong class="label">Nome do Cliente:</strong>
             {{ cliente.nomeCliente }}
           </div>
-          <div class="column ">
+          <div class="column">
             <strong class="label">Descrição do serviço:</strong>
-           <p class="servico"> {{ cliente.servico }}</p>
+            <p class="servico">{{ cliente.servico }}</p>
           </div>
           <div class="column">
             <strong class="label">Valor: R$:</strong>{{ cliente.valor }}
           </div>
-          <button
-            class="detalhes-button ml-2 is-danger"
-            @click="toggleDropdown(cliente._id)"
-          >
+          <button class="detalhes-button ml-2 is-danger" @click="toggleDropdown(cliente._id)">
             <span class="icon is-small">
               <i class="fa-solid fa-circle-info"></i>
             </span>
           </button>
-          <button
-            class="editar-button ml-2 is-danger"
-            @click="openEditModal(cliente)"
-          >
+          <button class="editar-button ml-2 is-danger" @click="openEditModal(cliente)">
             <span class="icon is-small">
               <i class="fa-regular fa-pen-to-square"></i>
             </span>
           </button>
-          <button
-            class="deletar-button ml-2 is-danger"
-            @click="openDeleteConfirmation(cliente._id)"
-          >
+          <button class="deletar-button ml-2 is-danger" @click="openDeleteConfirmation(cliente._id)">
             <span class="icon is-small">
               <i class="fas fa-trash"></i>
             </span>
           </button>
         </div>
-        <div
-          v-if="activeDropdown === cliente._id"
-          class="dropdown columns is-30"
-        >
+        <div v-if="activeDropdown === cliente._id" class="dropdown columns is-30">
           <!-- Dropdown content -->
           <div class="dropdown-content">
-            <div class="dropdown-content">
-              <div class="table-container">
-              <table class="table">
-                <tbody>
-                <tr>
-                  <td>
-                    <strong class="label">Cliente:</strong>
-                    <Box>{{ cliente.nomeCliente }}</Box>
-                  </td>
-                  <td>
-                    <strong class="label">Serviço:</strong>
-                    <Box class=" servico"> {{ cliente.servico }} </Box>
-                  </td>
-                
-                  <td>
-                    <strong class="label">Valor:</strong> 
-                    <Box>{{ cliente.cidade }}</Box>
-                  </td>
-                  <td>
-                    <strong class="label">Data:</strong> 
-                    <Box>{{ cliente.data }}</Box>
-                  </td>
-                
-                  <td>
-                    <strong class="label">Cidade:</strong> <Box>
-                      {{ cliente.cidade }}
-                    </Box>
-                  </td>
-                  <td></td>
-                </tr>
-              </tbody>
-              </table>
+            <div class="tabela columns is-30">
+              <div class="column">
+                <strong class="label">Cliente:</strong>
+                <Box class="tabela-todos">{{ cliente.nomeCliente }}</Box>
+              </div>
+              <div class="column">
+                <strong class="label">Serviço:</strong>
+                <Box class="tabela-servico"> {{ cliente.servico }} </Box>
+              </div>
+              <div class="column">
+                <strong class="label">Valor:</strong>
+                <Box class="tabela-todos">{{ cliente.cidade }}</Box>
+              </div>
+              <div class="column">
+                <strong class="label">Data:</strong>
+                <Box class="tabela-todos">{{ cliente.data }}</Box>
+              </div>
+              <div class="column">
+                <strong class="label">Cidade:</strong>
+                <Box class="tabela-todos">
+                  {{ cliente.cidade }}
+                </Box>
+              </div>
             </div>
-            </div>
+
           </div>
+
         </div>
       </Box>
     </div>
@@ -98,20 +74,13 @@
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">Confirmação de exclusão</p>
-          <button
-            class="delete"
-            aria-label="close"
-            @click="closeDeleteConfirmation"
-          ></button>
+          <button class="delete" aria-label="close" @click="closeDeleteConfirmation"></button>
         </header>
         <section class="modal-card-body">
           <p>Deseja excluir este cliente?</p>
         </section>
         <footer class="modal-card-foot">
-          <button
-            class="button is-danger-modal"
-            @click="deleteClienteConfirmation"
-          >
+          <button class="button is-danger-modal" @click="deleteClienteConfirmation">
             Sim
           </button>
           <button class="button" @click="closeDeleteConfirmation">Não</button>
@@ -125,41 +94,25 @@
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">Editar Cliente:</p>
-          <button
-            class="delete"
-            aria-label="close"
-            @click="closeEditModal"
-          ></button>
+          <button class="delete" aria-label="close" @click="closeEditModal"></button>
         </header>
         <section class="modal-card-body">
           <div class="field">
             <label class="label">Nome do Cliente:</label>
             <div class="control">
-              <input
-                class="input"
-                type="text"
-                v-model="editedCliente.nomeCliente"
-              />
+              <input class="input" type="text" v-model="editedCliente.nomeCliente" />
             </div>
           </div>
           <div class="field">
             <label class="label">Descrição do serviço:</label>
             <div class="control">
-              <input
-                class="input"
-                type="text"
-                v-model="editedCliente.servico"
-              />
+              <input class="input" type="text" v-model="editedCliente.servico" />
             </div>
           </div>
           <div class="field">
             <label class="label">Valor:</label>
             <div class="control">
-              <input
-                class="input"
-                type="number"
-                v-model="editedCliente.valor"
-              />
+              <input class="input" type="number" v-model="editedCliente.valor" />
             </div>
           </div>
           <div class="field">
@@ -192,7 +145,7 @@ import { defineComponent, computed } from "vue";
 import ICliente from "../interfaces/ICliente";
 import Box from "./Box.vue";
 import { TipoNotificacao } from "@/interfaces/INotificação";
-import useNotificador from "@/hooks/notificador"
+import useNotificador from "@/hooks/notificador";
 import { useStore } from "@/store";
 
 export default defineComponent({
@@ -283,6 +236,11 @@ export default defineComponent({
         if (response.ok) {
           console.log(data.message);
           this.fetchClienteData();
+          this.notificar(
+            TipoNotificacao.SUCESSO,
+            "EXELENTE!",
+            `o cliente foi excluido com sucesso!`
+          );
         } else {
           console.error("Erro ao excluir cliente:", data.error);
         }
@@ -327,7 +285,11 @@ export default defineComponent({
         if (response.ok) {
           console.log(data.message);
           this.fetchClienteData();
-          this.notificar(TipoNotificacao.SUCESSO, "EXELENTE!", `o cliente ${this.editedCliente.nomeCliente.toLocaleLowerCase()} foi editado com sucesso!`)
+          this.notificar(
+            TipoNotificacao.SUCESSO,
+            "EXELENTE!",
+            `o cliente ${this.editedCliente.nomeCliente.toLocaleLowerCase()} foi editado com sucesso!`
+          );
         } else {
           console.error("Erro ao editar cliente:", data.error);
         }
@@ -339,10 +301,10 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const {notificar} = useNotificador()
+    const { notificar } = useNotificador();
     return {
       store,
-      notificar
+      notificar,
     };
   },
 });
@@ -351,33 +313,44 @@ export default defineComponent({
 <style scoped>
 .search-container {
   padding: 1.5rem 0;
+  margin-left: 20px;
+  
 }
 
-.page-container {
-  border: 10px solid #496678;
+.dropdown-content{
+  border: 1px solid #e96d13;
   padding: 1.25rem;
 }
 
-.servico {
+.filtro {
+  background-color: aliceblue;
+  max-width: 600px;
+  border: 1px solid #e96d13;
+  
+}
+
+.tabela-todos {
   overflow-y: auto;
   max-width: 400px;
-  max-height: 65px;
-  word-break: break-all
+  max-height: 80px;
+  
+}
+.tabela-servico {
+  overflow-y: auto;
+  overflow-x: auto;
+  max-width: 400px;
+  max-height: 200px;
+  word-break: break-all;  
 }
 
-.label {
-  color: #e96d13;
-  font-weight: bold;
-}
+.servico{
+  
+  overflow-y: auto;
+  overflow-x: auto;
+  max-width: 400px;
+  max-height: 200px;
+  word-break: break-all;  
 
-.dropdown-item p {
-  margin: 0;
-  padding-bottom: 0.5em;
-}
-
-.dropdown-item strong {
-  margin-right: 0.5em;
-  padding-bottom: 0.5em;
 }
 
 .client-container {
@@ -385,6 +358,17 @@ export default defineComponent({
   overflow-y: auto;
   padding: 1.25rem;
 }
+
+.box-container {
+  border: 1px solid #e96d13;
+}
+
+.label {
+  color: #e96d13;
+  font-weight: bold;
+}
+
+
 
 .detalhes-button {
   background-color: transparent;
@@ -419,15 +403,34 @@ export default defineComponent({
 /* Modal styles */
 .modal-card-foot {
   justify-content: flex-end;
+  background-color: aliceblue;
+}
+.modal-card-head {
+  background-color: aliceblue;
+}
+.button {
+  border: 1px solid #e96d13;
+  background-color: #496678;
+  color: #e96d13;
+  transition: background-color 0.3s, color 0.3s;
 }
 
+.button:hover {
+  background-color: aliceblue;
+  color: #496678;
+}
+
+.input:focus {
+  box-shadow: 0 0 0 0.125em #496678;
+}
 .modal-card-foot .button {
   margin-left: 0.5rem;
 }
 
-.table{
+.tabela {
   background-color: aliceblue;
-  border: 1px solid  #e96d13;
+  
+  padding: 1.25rem;
 }
 
 .modal-card-title {
@@ -435,8 +438,16 @@ export default defineComponent({
   font-weight: bold;
 }
 
+.dropdown-content {
+  padding: 1.25rem;
+  background-color: aliceblue;
+}
 .is-danger-modal {
   background-color: #e96d13;
   color: #fff;
+}
+
+.modal-card-body {
+  background-color: aliceblue;
 }
 </style>

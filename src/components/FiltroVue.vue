@@ -1,11 +1,11 @@
 <template>
-    <div class="container">
-      <h1 class="title">Relatório de Pedidos</h1>
-  
-      <!-- Filtro por data -->
-      <div class="columns">
-      <div class="column is-three-fifths">
-        <div class="box">
+  <div class="container max-w-screen-xl">
+    <h1 class="title">Relatório de Pedidos</h1>
+
+    <!-- Filtro por data -->
+    <div class="columns filtro-data is-flex">
+  <div class="column is-three-fifths">
+    <div class="box justify-center">
           <div class="field is-horizontal">
             <div class="field-label is-normal">
               <label class="label">Filtrar por data:</label>
@@ -13,10 +13,10 @@
             <div class="field-body">
               <div class="field is-grouped">
                 <div class="control">
-                  <input class="input" type="date" v-model="startDate">
+                  <input class="input" type="date" v-model="startDate" />
                 </div>
                 <div class="control">
-                  <input class="input" type="date" v-model="endDate">
+                  <input class="input" type="date" v-model="endDate" />
                 </div>
                 <div class="control">
                   <button class="button is-primary" @click="filterByDate">Filtrar</button>
@@ -27,51 +27,47 @@
         </div>
       </div>
       <div class="column is-one-fifth">
-        <div class="box">
+        <div class="box resultado">
           <p>Total de pedidos: {{ filteredData.length }}</p>
-          <p>Total em dinheiro: R${{ getTotalValue() }}</p>
+          <p>Total em valor: R${{ getTotalValue() }}</p>
           <!-- <p>Clientes únicos: {{ getUniqueCustomers() }}</p>
           <p>Clientes que compraram duas vezes ou mais: {{ getRepeatCustomers() }}</p> -->
         </div>
       </div>
     </div>
 
-      
-  
-      <!-- Tabela de dados -->
-      <div class="table-container" v-if="filteredData.length > 0">
-        <table class="table is-bordered is-four-fifths box">
-          <thead>
-            <tr>
-              <th>Nome do Cliente</th>
-              <th>Serviço</th>
-              <th>Valor</th>
-              <th>Data</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="item in filteredData" :key="item._id">
-              <td>{{ item.nomeCliente }}</td>
-              <td>{{ item.servico }}</td>
-              <td>{{ item.valor }}</td>
-              <td>{{ item.data }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-  
-      <!-- Mensagem quando não há dados filtrados -->
-      <p v-if="filteredData.length === 0">Nenhum dado encontrado com os filtros selecionados.</p>
+    <!-- Tabela de dados -->
+    <div class="table-container" v-if="filteredData.length > 0">
+      <table class="table is-bordered is-four-fifths box-table">
+        <thead>
+          <tr>
+            <th>Nome do Cliente</th>
+            <th>Serviço</th>
+            <th>Valor</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in filteredData" :key="item._id">
+            <td>{{ item.nomeCliente }}</td>
+            <td>{{ item.servico }}</td>
+            <td>{{ item.valor }}</td>
+            <td>{{ item.data }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </template>
-  
+
+    <!-- Mensagem quando não há dados filtrados -->
+    <p v-if="filteredData.length === 0">Nenhum dado encontrado com os filtros selecionados.</p>
+  </div>
+</template>
 
 <script lang="ts">
-import { ref, onMounted } from 'vue';
+import { defineComponent, ref } from 'vue';
 import ICliente from '@/interfaces/ICliente';
 
-
-export default {
+export default defineComponent({
   name: "FiltroVue",
   data() {
     return {
@@ -83,9 +79,9 @@ export default {
   },
   methods: {
     fetchDados(): void {
-      fetch('http://localhost:3010/cadastroclientesget')
+      fetch('http://177.136.214.131:3010/cadastroclientesget')
         .then(response => response.json())
-        .then(data => {
+        .then((data: ICliente[]) => {
           this.data = data.map(item => ({
             ...item,
             data: item.data.replace(/-/g, '/')
@@ -97,79 +93,106 @@ export default {
         });
     },
     filterByDate(): void {
-  if (this.startDate && this.endDate) {
-    const startDateParts = this.startDate.split('-');
-    const endDateParts = this.endDate.split('-');
-    const startYear = parseInt(startDateParts[0]);
-    const startMonth = parseInt(startDateParts[1]);
-    const startDay = parseInt(startDateParts[2]);
-    const endYear = parseInt(endDateParts[0]);
-    const endMonth = parseInt(endDateParts[1]);
-    const endDay = parseInt(endDateParts[2]);
+      if (this.startDate && this.endDate) {
+        const startDateParts = this.startDate.split('-');
+        const endDateParts = this.endDate.split('-');
+        const startYear = parseInt(startDateParts[0]);
+        const startMonth = parseInt(startDateParts[1]);
+        const startDay = parseInt(startDateParts[2]);
+        const endYear = parseInt(endDateParts[0]);
+        const endMonth = parseInt(endDateParts[1]);
+        const endDay = parseInt(endDateParts[2]);
 
-    this.filteredData = this.data.filter(item => {
-      const itemDateParts = item.data.split('/');
-      const itemYear = parseInt(itemDateParts[2]);
-      const itemMonth = parseInt(itemDateParts[1]);
-      const itemDay = parseInt(itemDateParts[0]);
+        this.filteredData = this.data.filter((item: ICliente) => {
+          const itemDateParts = item.data.split('/');
+          const itemYear = parseInt(itemDateParts[2]);
+          const itemMonth = parseInt(itemDateParts[1]);
+          const itemDay = parseInt(itemDateParts[0]);
 
-      return (
-        itemYear >= startYear && itemYear <= endYear &&
-        itemMonth >= startMonth && itemMonth <= endMonth &&
-        itemDay >= startDay && itemDay <= endDay
-      );
-    });
-  } else {
-    this.filteredData = this.data;
-  }
-},
-
-
-  
+          return (
+            itemYear >= startYear &&
+            itemYear <= endYear &&
+            itemMonth >= startMonth &&
+            itemMonth <= endMonth &&
+            itemDay >= startDay &&
+            itemDay <= endDay
+          );
+        });
+      } else {
+        this.filteredData = this.data;
+      }
+    },
     getTotalValue(): number {
-      return this.filteredData.reduce((total, item) => total + item.valor, 0);
+      return this.filteredData.reduce((total: number, item: ICliente) => total + item.valor, 0);
     },
     getUniqueCustomers(): number {
       const uniqueCustomers = new Set<string>();
-      this.filteredData.forEach(item => uniqueCustomers.add(item.nomeCliente));
+      this.filteredData.forEach((item: ICliente) => uniqueCustomers.add(item.nomeCliente));
       return uniqueCustomers.size;
     },
     getRepeatCustomers(): number {
       const customerCounts: Record<string, number> = {};
-      this.filteredData.forEach(item => {
+      this.filteredData.forEach((item: ICliente) => {
         if (customerCounts[item.nomeCliente]) {
           customerCounts[item.nomeCliente]++;
         } else {
           customerCounts[item.nomeCliente] = 1;
         }
       });
-      
-      return Object.values(customerCounts).filter(count => count >= 2).length;
+
+      return Object.values(customerCounts).filter((count: number) => count >= 2).length;
     }
   },
   mounted() {
     this.fetchDados();
   }
-};
+});
 </script>
 
-
-
 <style scoped>
+.button {
+  border: 1px solid #e96d13;
+  background-color: #496678;
+  color: #e96d13;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+
+
+.button:hover {
+  background-color: aliceblue;
+  color: #496678;
+}
+
+.input:focus {
+  box-shadow: 0 0 0 0.125em #496678;
+}
+
 .container {
   padding: 1.25rem;
+  
+}
+
+.columns {
+  margin-bottom: 1.5rem;
+}
+
+.column {
+  padding-right: 0.75rem;
 }
 
 .box {
-    background-color: aliceblue;
-    padding: 1.25rem;
-    max-width: 300x;
-    overflow: auto;
-    border: 1px solid #e96d13;
+  background-color: aliceblue;
+  padding: 1.25rem;
+  overflow: auto;
+  border: 1px solid #e96d13;
 }
-
-
-
+.box-table {
+  background-color: aliceblue;
+  padding: 1.25rem;
+  overflow: auto;
+  border: 1px solid #e96d13;
+}
 .title {
   color: #e96d13;
   font-weight: bold;
@@ -187,34 +210,35 @@ export default {
   font-size: 1rem;
 }
 
-.table {
+.table-container {
   margin-top: 1.5rem;
-  overflow: auto;
+  
+  max-height: calc(100vh - 300px);
+  overflow-y: auto
+}
+
+.table {
+  width: 100%;
+  table-layout: fixed;
 }
 
 .table td {
   padding: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .table.is-bordered {
   border: 1px solid #e96d13;
 }
 
-.table.is-fullwidth {
-  width: 100%;
-}
-
-.button.is-primary {
+.table-header {
   background-color: #e96d13;
-}
-
-.button.is-primary:hover {
-  background-color: #d24c0f;
+  color: #fff;
 }
 
 p {
   margin-bottom: 0.5rem;
 }
-
-
 </style>
