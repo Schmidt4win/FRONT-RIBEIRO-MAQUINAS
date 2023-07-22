@@ -1,6 +1,6 @@
 <template>
   <div class="mr-3 page-container">
-    <div class=" search-container">
+    <div class="search-container">
       <input class="input filtro box" type="text" v-model="searchQuery"
         placeholder="Procure pelo nome do cliente, valor, cidade, etc..." />
     </div>
@@ -12,8 +12,8 @@
             {{ cliente.nomeCliente }}
           </div>
           <div class="column">
-            <strong class="label">Descrição do serviço:</strong>
-            <p class="servico">{{ cliente.servico }}</p>
+            <strong class="label">Modelo da Maquina:</strong>
+            <p class="servico">{{ cliente.maquina }}</p>
           </div>
           <div class="column">
             <strong class="label">Valor: R$:</strong>{{ cliente.valor }}
@@ -48,7 +48,7 @@
               </div>
               <div class="column">
                 <strong class="label">Valor:</strong>
-                <Box class="tabela-todos">{{ cliente.cidade }}</Box>
+                <Box class="tabela-todos">{{ cliente.valor }}</Box>
               </div>
               <div class="column">
                 <strong class="label">Data:</strong>
@@ -56,14 +56,14 @@
               </div>
               <div class="column">
                 <strong class="label">Cidade:</strong>
-                <Box class="tabela-todos">
-                  {{ cliente.cidade }}
-                </Box>
+                <Box class="tabela-todos">{{ cliente.cidade }}</Box>
+              </div>
+              <div class="column">
+                <strong class="label">Telefone:</strong>
+                <Box class="tabela-todos">{{ cliente.telefone }}</Box>
               </div>
             </div>
-
           </div>
-
         </div>
       </Box>
     </div>
@@ -104,9 +104,21 @@
             </div>
           </div>
           <div class="field">
+            <label class="label">Modelo da Maquina:</label>
+            <div class="control">
+              <input class="input" type="text" v-model="editedCliente.maquina" />
+            </div>
+          </div>
+          <div class="field">
             <label class="label">Descrição do serviço:</label>
             <div class="control">
               <input class="input" type="text" v-model="editedCliente.servico" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Telefone do Cliente:</label>
+            <div class="control">
+              <input class="input" type="text" v-model="editedCliente.telefone" />
             </div>
           </div>
           <div class="field">
@@ -164,10 +176,13 @@ export default defineComponent({
       editedCliente: {
         _id: "",
         nomeCliente: "",
+        cidade: "",
+        telefone: "",
         servico: "",
         valor: 0,
+        data_hora: "",
         data: "",
-        cidade: "",
+        maquina: ""
       },
     };
   },
@@ -184,14 +199,14 @@ export default defineComponent({
       } else {
         const query = this.searchQuery.toLowerCase();
         return this.fetchedClientes.filter((cliente: ICliente) => {
-          const { nomeCliente, cidade, telefone, servico, valor, data } =
-            cliente;
+          const { nomeCliente, cidade, telefone, servico, valor, data, maquina } = cliente;
           return (
             nomeCliente.toLowerCase().includes(query) ||
             cidade.toLowerCase().includes(query) ||
             telefone.toLowerCase().includes(query) ||
             servico.toLowerCase().includes(query) ||
             valor.toString().includes(query) ||
+            maquina.toString().includes(query) ||
             data.toLowerCase().includes(query)
           );
         });
@@ -201,9 +216,7 @@ export default defineComponent({
   methods: {
     async fetchClienteData() {
       try {
-        const response = await fetch(
-          "http://177.136.214.131:3010/cadastroclientesget"
-        );
+        const response = await fetch("http://177.136.214.131:3010/cadastroclientesget");
         const data = await response.json();
         console.log(data);
         this.fetchedClientes = data;
@@ -228,10 +241,9 @@ export default defineComponent({
     },
     async deleteCliente(clienteId: string) {
       try {
-        const response = await fetch(
-          `http://177.136.214.131:3010/cadastroclientesdelete/${clienteId}`,
-          { method: "DELETE" }
-        );
+        const response = await fetch(`http://177.136.214.131:3010/cadastroclientesdelete/${clienteId}`, {
+          method: "DELETE"
+        });
         const data = await response.json();
         if (response.ok) {
           console.log(data.message);
@@ -263,10 +275,13 @@ export default defineComponent({
       this.editedCliente = {
         _id: "",
         nomeCliente: "",
+        cidade: "",
+        telefone: "",
         servico: "",
         valor: 0,
+        data_hora: "",
         data: "",
-        cidade: "",
+        maquina: ""
       };
     },
     async confirmEditCliente() {
@@ -314,7 +329,6 @@ export default defineComponent({
 .search-container {
   padding: 1.5rem 0;
   margin-left: 20px;
-  
 }
 
 .dropdown-content{
@@ -326,31 +340,28 @@ export default defineComponent({
   background-color: aliceblue;
   max-width: 600px;
   border: 1px solid #e96d13;
-  
 }
 
 .tabela-todos {
   overflow-y: auto;
   max-width: 400px;
   max-height: 80px;
-  
 }
+
 .tabela-servico {
   overflow-y: auto;
   overflow-x: auto;
-  max-width: 400px;
+  max-width: 500px;
   max-height: 200px;
-  word-break: break-all;  
+  word-break: normal;  
 }
 
-.servico{
-  
+.servico {
   overflow-y: auto;
   overflow-x: auto;
   max-width: 400px;
   max-height: 200px;
-  word-break: break-all;  
-
+  word-break: keep-all;
 }
 
 .client-container {
@@ -367,8 +378,6 @@ export default defineComponent({
   color: #e96d13;
   font-weight: bold;
 }
-
-
 
 .detalhes-button {
   background-color: transparent;
@@ -405,9 +414,11 @@ export default defineComponent({
   justify-content: flex-end;
   background-color: aliceblue;
 }
+
 .modal-card-head {
   background-color: aliceblue;
 }
+
 .button {
   border: 1px solid #e96d13;
   background-color: #496678;
@@ -423,13 +434,13 @@ export default defineComponent({
 .input:focus {
   box-shadow: 0 0 0 0.125em #496678;
 }
+
 .modal-card-foot .button {
   margin-left: 0.5rem;
 }
 
 .tabela {
   background-color: aliceblue;
-  
   padding: 1.25rem;
 }
 
@@ -442,6 +453,7 @@ export default defineComponent({
   padding: 1.25rem;
   background-color: aliceblue;
 }
+
 .is-danger-modal {
   background-color: #e96d13;
   color: #fff;

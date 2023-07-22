@@ -1,90 +1,139 @@
 <template>
-  
-    <div class="container form-container">
-      <h1 class="title is-4 has-text-centered mb-5">Cadastro de Serviço</h1>
-      <form @submit.prevent="submitForm" class="form-content">
-        <div class="columns is-variable is-2">
-          <div class="column">
-            <div class="field">
-              <label for="nomeCliente" class="label">Nome do cliente:</label>
-              <div class="control">
-                <input type="text" class="input is-flexible" v-model="nomeCliente" required>
-              </div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="field">
-              <label for="cidade" class="label">Cidade:</label>
-              <div class="control">
-                <input type="text" class="input is-flexible" v-model="cidade" required>
-              </div>
+  <div class="container form-container">
+    <h1 class="title is-4 has-text-centered mb-5">Cadastro de Serviço</h1>
+    <form @submit.prevent="submitForm" class="form-content">
+      <div class="columns is-variable is-2 is-mobile">
+        <div class="column is-half">
+          <div class="field">
+            <label for="nomeCliente" class="label">Nome do cliente:</label>
+            <div class="control">
+              <input
+                type="text"
+                class="input is-flexible"
+                v-model="nomeCliente"
+                required
+              />
             </div>
           </div>
         </div>
+        <div class="column is-half">
+          <div class="field">
+            <label for="cidade" class="label">Cidade:</label>
+            <div class="control">
+              <input
+                type="text"
+                class="input is-flexible"
+                v-model="cidade"
+                required
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div class="columns is-variable is-2">
-          <div class="column">
-            <div class="field">
-              <label for="telefone" class="label">Telefone:</label>
-              <div class="control">
-                <input type="text" class="input is-flexible" v-model="telefone" required>
-              </div>
+      <div class="columns is-variable is-2 is-mobile">
+        <div class="column is-half">
+          <div class="field">
+            <label for="telefone" class="label">Telefone:</label>
+            <div class="control">
+              <input
+                type="tel"
+                class="input is-flexible"
+                v-model="telefone"
+                mask="###########"
+                placeholder="XXXXXXXXXXX"
+                required
+              />
             </div>
+            <p class="help">
+              Informe um número de telefone válido no formato XXXXXXXXXXX.
+            </p>
           </div>
-          <div class="column">
-            <div class="field">
-              <label for="servico" class="label">Serviço:</label>
-              <div class="control">
-                <input type="text" class="input is-flexible" v-model="servico" required>
-              </div>
+        </div>
+        <div class="column is-half">
+          <div class="field">
+            <label for="servico" class="label">Serviço:</label>
+            <div class="control">
+              <input
+                type="text"
+                class="input is-flexible"
+                v-model="servico"
+                required
+              />
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="columns is-variable is-2">
-          <div class="column">
-            <div class="field">
-              <label for="data" class="label">Data:</label>
-              <div class="control">
-                <input type="date" class="input is-flexible" v-model="data" required>
-              </div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="field">
-              <label for="valor" class="label">Valor:</label>
-              <div class="control">
-                <input type="number" step="0.01" class="input is-flexible" v-model="valor" required>
-              </div>
+      <div class="columns is-variable is-3 is-mobile">
+        <div class="column">
+          <div class="field">
+            <label for="data" class="label">Data:</label>
+            <div class="control">
+              <input
+                type="date"
+                class="input is-flexible"
+                v-model="data"
+                required
+              />
             </div>
           </div>
         </div>
+        <div class="column">
+          <div class="field">
+            <label for="cidade" class="label">Maquina:</label>
+            <div class="control">
+              <input
+                type="text"
+                class="input is-flexible"
+                v-model="maquina"
+                required
+              />
+            </div>
+          </div>
+        </div>
+        <div class="column">
+          <div class="field">
+            <label for="valor" class="label">Valor:</label>
+            <div class="control">
+              <input
+                type="number"
+                step="0.01"
+                class="input is-flexible"
+                v-model="valor"
+                required
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <div class="field is-grouped is-grouped-left">
-          <div class="control">
-            <button type="submit" class="button is-primary">Enviar</button>
-          </div>
+      <div class="field is-grouped is-grouped-left">
+        <div class="control">
+          <button type="submit" class="button is-primary">Enviar</button>
         </div>
-      </form>
-    </div>
-  
+      </div>
+    </form>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 import { TipoNotificacao } from "@/interfaces/INotificação";
-import useNotificador from "@/hooks/notificador"
+import useNotificador from "@/hooks/notificador";
 import { useStore } from "@/store";
+
 
 export default defineComponent({
   data() {
     return {
-      nomeCliente: '',
-      cidade: '',
-      telefone: '',
-      servico: '',
-      data: '',
-      valor: ''
+      nomeCliente: "",
+      cidade: "",
+      telefone: "",
+      servico: "",
+      data: "",
+      valor: "",
+      maquina: "",
     };
   },
   methods: {
@@ -95,56 +144,61 @@ export default defineComponent({
         telefone: this.telefone,
         servico: this.servico,
         valor: this.valor,
-        data_hora: new Date().toLocaleString('pt-BR'),
-        data: this.formatDate(this.data) // Format the date before sending
+        data_hora: new Date().toLocaleString("pt-BR"),
+        data: this.formatDate(this.data), // Format the date before sending
+        maquina: this.maquina,
       };
 
       console.log(data);
 
-      fetch('http://177.136.214.131:3010/cadastroclientespost', {
-        method: 'POST',
+      fetch("http://177.136.214.131:3010/cadastroclientespost", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Dados enviados com sucesso:', data);
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Dados enviados com sucesso:", data);
           // Perform any additional actions if necessary
           this.resetForm();
-          this.notificar(TipoNotificacao.SUCESSO, "EXELENTE!", `O cliente foi salvo com sucesso!`)
+          this.notificar(
+            TipoNotificacao.SUCESSO,
+            "EXELENTE!",
+            `O cliente foi salvo com sucesso!`
+          );
         })
-        .catch(error => {
-          console.error('Erro ao enviar os dados:', error);
+        .catch((error) => {
+          console.error("Erro ao enviar os dados:", error);
           // Handle the error appropriately
         });
     },
     formatDate(date: string): string {
-      const [year, month, day] = date.split('-');
+      const [year, month, day] = date.split("-");
       return `${day}/${month}/${year}`;
     },
     resetForm(): void {
-      this.nomeCliente = '';
-      this.cidade = '';
-      this.telefone = '';
-      this.servico = '';
-      this.valor = '';
-    }
+      this.nomeCliente = "";
+      this.cidade = "";
+      this.telefone = "";
+      this.servico = "";
+      this.valor = "";
+      this.maquina = "";
+    },
   },
   setup() {
     const store = useStore();
     const { notificar } = useNotificador();
     return {
       store,
-      notificar
+      notificar,
     };
   },
 });
 </script>
 
 <style scoped>
-
 .label {
   color: #e96d13;
 }
@@ -152,7 +206,6 @@ export default defineComponent({
 .title {
   color: #e96d13;
 }
-
 
 .button {
   border: 1px solid #e96d13;

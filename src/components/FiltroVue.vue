@@ -66,6 +66,26 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import ICliente from '@/interfaces/ICliente';
+function compareDates(date1: string, date2: string) {
+  const parts1 = date1.split('/');
+  const parts2 = date2.split('/');
+  const year1 = parseInt(parts1[2]);
+  const month1 = parseInt(parts1[1]);
+  const day1 = parseInt(parts1[0]);
+  const year2 = parseInt(parts2[2]);
+  const month2 = parseInt(parts2[1]);
+  const day2 = parseInt(parts2[0]);
+
+  if (year1 !== year2) {
+    return year1 - year2;
+  }
+
+  if (month1 !== month2) {
+    return month1 - month2;
+  }
+
+  return day1 - day2;
+}
 
 export default defineComponent({
   name: "FiltroVue",
@@ -78,6 +98,7 @@ export default defineComponent({
     };
   },
   methods: {
+    
     fetchDados(): void {
       fetch('http://177.136.214.131:3010/cadastroclientesget')
         .then(response => response.json())
@@ -118,6 +139,9 @@ export default defineComponent({
             itemDay <= endDay
           );
         });
+
+        // Sort the filtered data based on the 'data' field in ascending order
+        this.filteredData.sort((item1, item2) => compareDates(item1.data, item2.data));
       } else {
         this.filteredData = this.data;
       }
@@ -142,6 +166,7 @@ export default defineComponent({
 
       return Object.values(customerCounts).filter((count: number) => count >= 2).length;
     }
+    
   },
   mounted() {
     this.fetchDados();
@@ -236,6 +261,7 @@ export default defineComponent({
 .table-header {
   background-color: #e96d13;
   color: #fff;
+  
 }
 
 p {
