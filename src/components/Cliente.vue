@@ -2,66 +2,58 @@
   <div class="mr-3 page-container">
     <div class="search-container">
       <input class="input filtro box" type="text" v-model="searchQuery"
-        placeholder="Procure pelo nome do cliente, valor, cidade, etc..." />
+        placeholder="Procure pelo nome do ticket, valor, setor, etc..." />
     </div>
     <div class="client-container">
-      <Box class="box-container" v-for="cliente in filteredClientes" :key="cliente._id">
+      <Box class="box-container" v-for="ticket in filteredtickets" :key="ticket._id">
         <div class="columns">
           <div class="column">
-            <strong class="label">Nome do Cliente:</strong>
-            {{ cliente.nomeCliente }}
+            <strong class="label">Nome do Usuario:</strong>
+            {{ ticket.nomeUsuario }}
           </div>
           <div class="column">
             <strong class="label">Modelo da Maquina:</strong>
-            <p class="servico">{{ cliente.maquina }}</p>
+            <p class="servico">{{ ticket.maquina }}</p>
           </div>
-          <div class="column">
-            <strong class="label">Valor: R$:</strong>{{ cliente.valor }}
-          </div>
-          <button class="detalhes-button ml-2 is-danger" @click="toggleDropdown(cliente._id)">
+          
+          <button class="detalhes-button ml-2 is-danger" @click="toggleDropdown(ticket._id)">
             <span class="icon is-small">
               <i class="fa-solid fa-circle-info"></i>
             </span>
           </button>
-          <button class="editar-button ml-2 is-danger" @click="openEditModal(cliente)">
+          <button class="editar-button ml-2 is-danger" @click="openEditModal(ticket)">
             <span class="icon is-small">
               <i class="fa-regular fa-pen-to-square"></i>
             </span>
           </button>
-          <button class="deletar-button ml-2 is-danger" @click="openDeleteConfirmation(cliente._id)">
+          <button class="deletar-button ml-2 is-danger" @click="openDeleteConfirmation(ticket._id)">
             <span class="icon is-small">
               <i class="fas fa-trash"></i>
             </span>
           </button>
         </div>
-        <div v-if="activeDropdown === cliente._id" class="dropdown columns is-30">
+        <div v-if="activeDropdown === ticket._id" class="dropdown columns is-30">
           <!-- Dropdown content -->
           <div class="dropdown-content">
             <div class="tabela columns is-30">
               <div class="column">
-                <strong class="label">Cliente:</strong>
-                <Box class="tabela-todos">{{ cliente.nomeCliente }}</Box>
+                <strong class="label">ticket:</strong>
+                <Box class="tabela-todos">{{ ticket.nomeUsuario }}</Box>
               </div>
               <div class="column">
                 <strong class="label">Serviço:</strong>
-                <Box class="tabela-servico"> {{ cliente.servico }} </Box>
+                <Box class="tabela-servico"> {{ ticket.servico }} </Box>
               </div>
-              <div class="column">
-                <strong class="label">Valor:</strong>
-                <Box class="tabela-todos">{{ cliente.valor }}</Box>
-              </div>
+             
               <div class="column">
                 <strong class="label">Data:</strong>
-                <Box class="tabela-todos">{{ cliente.data }}</Box>
+                <Box class="tabela-todos">{{ ticket.data }}</Box>
               </div>
               <div class="column">
-                <strong class="label">Cidade:</strong>
-                <Box class="tabela-todos">{{ cliente.cidade }}</Box>
+                <strong class="label">setor:</strong>
+                <Box class="tabela-todos">{{ ticket.setor }}</Box>
               </div>
-              <div class="column">
-                <strong class="label">Telefone:</strong>
-                <Box class="tabela-todos">{{ cliente.telefone }}</Box>
-              </div>
+             
             </div>
           </div>
         </div>
@@ -77,10 +69,10 @@
           <button class="delete" aria-label="close" @click="closeDeleteConfirmation"></button>
         </header>
         <section class="modal-card-body">
-          <p>Deseja excluir este cliente?</p>
+          <p>Deseja excluir este ticket?</p>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-danger-modal" @click="deleteClienteConfirmation">
+          <button class="button is-danger-modal" @click="deleteticketConfirmation">
             Sim
           </button>
           <button class="button" @click="closeDeleteConfirmation">Não</button>
@@ -93,55 +85,44 @@
       <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">Editar Cliente:</p>
+          <p class="modal-card-title">Editar ticket:</p>
           <button class="delete" aria-label="close" @click="closeEditModal"></button>
         </header>
         <section class="modal-card-body">
           <div class="field">
-            <label class="label">Nome do Cliente:</label>
+            <label class="label">Nome do ticket:</label>
             <div class="control">
-              <input class="input" type="text" v-model="editedCliente.nomeCliente" />
+              <input class="input" type="text" v-model="editedticket.nomeUsuario" />
             </div>
           </div>
           <div class="field">
             <label class="label">Modelo da Maquina:</label>
             <div class="control">
-              <input class="input" type="text" v-model="editedCliente.maquina" />
+              <input class="input" type="text" v-model="editedticket.maquina" />
             </div>
           </div>
           <div class="field">
             <label class="label">Descrição do serviço:</label>
             <div class="control">
-              <input class="input" type="text" v-model="editedCliente.servico" />
+              <input class="input" type="text" v-model="editedticket.servico" />
             </div>
           </div>
-          <div class="field">
-            <label class="label">Telefone do Cliente:</label>
-            <div class="control">
-              <input class="input" type="text" v-model="editedCliente.telefone" />
-            </div>
-          </div>
-          <div class="field">
-            <label class="label">Valor:</label>
-            <div class="control">
-              <input class="input" type="number" v-model="editedCliente.valor" />
-            </div>
-          </div>
+                   
           <div class="field">
             <label class="label">Data:</label>
             <div class="control">
-              <input class="input" type="text" v-model="editedCliente.data" />
+              <input class="input" type="text" v-model="editedticket.data" />
             </div>
           </div>
           <div class="field">
-            <label class="label">Cidade:</label>
+            <label class="label">setor:</label>
             <div class="control">
-              <input class="input" type="text" v-model="editedCliente.cidade" />
+              <input class="input" type="text" v-model="editedticket.setor" />
             </div>
           </div>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-success" @click="confirmEditCliente">
+          <button class="button is-success" @click="confirmEditticket">
             Confirmar
           </button>
           <button class="button" @click="closeEditModal">Cancelar</button>
@@ -153,33 +134,30 @@
 
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-
-import ICliente from "../interfaces/ICliente";
+import ITicket from "@/interfaces/ITicket"
 import Box from "./Box.vue";
 import { TipoNotificacao } from "@/interfaces/INotificação";
 import useNotificador from "@/hooks/notificador";
 import { useStore } from "@/store";
 
 export default defineComponent({
-  name: "ClienteTeste",
+  name: "ticketTeste",
   components: {
     Box,
   },
   data() {
     return {
-      fetchedClientes: [] as ICliente[],
+      fetchedtickets: [] as ITicket[],
       activeDropdown: null as string | null,
       searchQuery: "",
       isDeleteModalOpen: false,
-      clienteToDelete: null as string | null,
+      ticketToDelete: null as string | null,
       isEditModalOpen: false,
-      editedCliente: {
+      editedticket: {
         _id: "",
-        nomeCliente: "",
-        cidade: "",
-        telefone: "",
+        nomeUsuario: "",
+        setor: "",
         servico: "",
-        valor: 0,
         data_hora: "",
         data: "",
         maquina: ""
@@ -187,25 +165,23 @@ export default defineComponent({
     };
   },
   beforeMount() {
-    this.fetchClienteData();
+    this.fetchticketData();
   },
   created() {
-    this.fetchClienteData();
+    this.fetchticketData();
   },
   computed: {
-    filteredClientes(): ICliente[] {
+    filteredtickets(): ITicket[] {
       if (!this.searchQuery) {
-        return this.fetchedClientes;
+        return this.fetchedtickets;
       } else {
         const query = this.searchQuery.toLowerCase();
-        return this.fetchedClientes.filter((cliente: ICliente) => {
-          const { nomeCliente, cidade, telefone, servico, valor, data, maquina } = cliente;
+        return this.fetchedtickets.filter((ticket: ITicket) => {
+          const { nomeUsuario, setor, servico, data, maquina } = ticket;
           return (
-            nomeCliente.toLowerCase().includes(query) ||
-            cidade.toLowerCase().includes(query) ||
-            telefone.toLowerCase().includes(query) ||
+            nomeUsuario.toLowerCase().includes(query) ||
+            setor.toLowerCase().includes(query) ||
             servico.toLowerCase().includes(query) ||
-            valor.toString().includes(query) ||
             maquina.toString().includes(query) ||
             data.toLowerCase().includes(query)
           );
@@ -214,102 +190,102 @@ export default defineComponent({
     },
   },
   methods: {
-    async fetchClienteData() {
+    async fetchticketData() {
       try {
-        const response = await fetch("http://177.136.214.131:3010/cadastroclientesget");
+        const response = await fetch("http://10.1.1.136:3010/cadastroticketget");
         const data = await response.json();
         console.log(data);
-        this.fetchedClientes = data;
+        this.fetchedtickets = data;
       } catch (error) {
-        console.error("Error fetching cliente data:", error);
+        console.error("Error fetching ticket data:", error);
       }
     },
-    toggleDropdown(clienteId: string) {
-      if (this.activeDropdown === clienteId) {
+    toggleDropdown(ticketId: string) {
+      if (this.activeDropdown === ticketId) {
         this.activeDropdown = null;
       } else {
-        this.activeDropdown = clienteId;
+        this.activeDropdown = ticketId;
       }
     },
-    openDeleteConfirmation(clienteId: string) {
-      this.clienteToDelete = clienteId;
+    openDeleteConfirmation(ticketId: string) {
+      this.ticketToDelete = ticketId;
       this.isDeleteModalOpen = true;
     },
     closeDeleteConfirmation() {
-      this.clienteToDelete = null;
+      this.ticketToDelete = null;
       this.isDeleteModalOpen = false;
     },
-    async deleteCliente(clienteId: string) {
+    async deleteticket(ticketId: string) {
       try {
-        const response = await fetch(`http://177.136.214.131:3010/cadastroclientesdelete/${clienteId}`, {
+        const response = await fetch(`http://177.136.214.131:3010/cadastroticketsdelete/${ticketId}`, {
           method: "DELETE"
         });
         const data = await response.json();
         if (response.ok) {
           console.log(data.message);
-          this.fetchClienteData();
+          this.fetchticketData();
           this.notificar(
             TipoNotificacao.SUCESSO,
             "EXELENTE!",
-            `o cliente foi excluido com sucesso!`
+            `o ticket foi excluido com sucesso!`
           );
         } else {
-          console.error("Erro ao excluir cliente:", data.error);
+          console.error("Erro ao excluir ticket:", data.error);
         }
       } catch (error) {
-        console.error("Erro ao excluir cliente:", error);
+        console.error("Erro ao excluir ticket:", error);
       }
     },
-    deleteClienteConfirmation() {
-      if (this.clienteToDelete) {
-        this.deleteCliente(this.clienteToDelete);
+    deleteticketConfirmation() {
+      if (this.ticketToDelete) {
+        this.deleteticket(this.ticketToDelete);
         this.closeDeleteConfirmation();
       }
     },
-    openEditModal(cliente: ICliente) {
-      this.editedCliente = { ...cliente };
+    openEditModal(ticket: ITicket) {
+      this.editedticket = { ...ticket };
       this.isEditModalOpen = true;
     },
     closeEditModal() {
       this.isEditModalOpen = false;
-      this.editedCliente = {
+      this.editedticket = {
         _id: "",
-        nomeCliente: "",
-        cidade: "",
-        telefone: "",
+        nomeUsuario: "",
+        setor: "",
+        
         servico: "",
-        valor: 0,
+        
         data_hora: "",
         data: "",
         maquina: ""
       };
     },
-    async confirmEditCliente() {
+    async confirmEditticket() {
       try {
         const response = await fetch(
-          `http://177.136.214.131:3010/cadastroclientesput/${this.editedCliente._id}`,
+          `http://177.136.214.131:3010/cadastroticketsput/${this.editedticket._id}`,
           {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(this.editedCliente),
+            body: JSON.stringify(this.editedticket),
           }
         );
         const data = await response.json();
         if (response.ok) {
           console.log(data.message);
-          this.fetchClienteData();
+          this.fetchticketData();
           this.notificar(
             TipoNotificacao.SUCESSO,
             "EXELENTE!",
-            `o cliente ${this.editedCliente.nomeCliente.toLocaleLowerCase()} foi editado com sucesso!`
+            `o ticket ${this.editedticket.nomeUsuario.toLocaleLowerCase()} foi editado com sucesso!`
           );
         } else {
-          console.error("Erro ao editar cliente:", data.error);
+          console.error("Erro ao editar ticket:", data.error);
         }
       } catch (error) {
-        console.error("Erro ao editar cliente:", error);
+        console.error("Erro ao editar ticket:", error);
       }
       this.closeEditModal();
     },

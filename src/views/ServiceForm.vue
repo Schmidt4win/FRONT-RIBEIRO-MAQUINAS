@@ -5,12 +5,12 @@
       <div class="columns is-variable is-2 is-mobile">
         <div class="column is-half">
           <div class="field">
-            <label for="nomeCliente" class="label">Nome do cliente:</label>
+            <label for="nomeCliente" class="label">Usuario:</label>
             <div class="control">
               <input
                 type="text"
                 class="input is-flexible"
-                v-model="nomeCliente"
+                v-model="nomeUsuario"
                 required
               />
             </div>
@@ -18,12 +18,12 @@
         </div>
         <div class="column is-half">
           <div class="field">
-            <label for="cidade" class="label">Cidade:</label>
+            <label for="cidade" class="label">Setor:</label>
             <div class="control">
               <input
                 type="text"
                 class="input is-flexible"
-                v-model="cidade"
+                v-model="setor"
                 required
               />
             </div>
@@ -32,27 +32,10 @@
       </div>
 
       <div class="columns is-variable is-2 is-mobile">
+     
         <div class="column is-half">
           <div class="field">
-            <label for="telefone" class="label">Telefone:</label>
-            <div class="control">
-              <input
-                type="tel"
-                class="input is-flexible"
-                v-model="telefone"
-                mask="###########"
-                placeholder="XXXXXXXXXXX"
-                required
-              />
-            </div>
-            <p class="help">
-              Informe um número de telefone válido no formato XXXXXXXXXXX.
-            </p>
-          </div>
-        </div>
-        <div class="column is-half">
-          <div class="field">
-            <label for="servico" class="label">Serviço:</label>
+            <label for="servico" class="label">Descrição:</label>
             <div class="control">
               <input
                 type="text"
@@ -81,7 +64,7 @@
         </div>
         <div class="column">
           <div class="field">
-            <label for="cidade" class="label">Maquina:</label>
+            <label for="cidade" class="label">Conf da Maquina:</label>
             <div class="control">
               <input
                 type="text"
@@ -92,20 +75,7 @@
             </div>
           </div>
         </div>
-        <div class="column">
-          <div class="field">
-            <label for="valor" class="label">Valor:</label>
-            <div class="control">
-              <input
-                type="number"
-                step="0.01"
-                class="input is-flexible"
-                v-model="valor"
-                required
-              />
-            </div>
-          </div>
-        </div>
+       
       </div>
 
       <div class="field is-grouped is-grouped-left">
@@ -127,23 +97,19 @@ import { useStore } from "@/store";
 export default defineComponent({
   data() {
     return {
-      nomeCliente: "",
-      cidade: "",
-      telefone: "",
+      nomeUsuario: "",
+      setor: "",
       servico: "",
       data: "",
-      valor: "",
       maquina: "",
     };
   },
   methods: {
     submitForm(): void {
       const data = {
-        nomeCliente: this.nomeCliente,
-        cidade: this.cidade,
-        telefone: this.telefone,
+        nomeUsuario: this.nomeUsuario,
+        setor: this.setor,
         servico: this.servico,
-        valor: this.valor,
         data_hora: new Date().toLocaleString("pt-BR"),
         data: this.formatDate(this.data), // Format the date before sending
         maquina: this.maquina,
@@ -151,7 +117,7 @@ export default defineComponent({
 
       console.log(data);
 
-      fetch("http://177.136.214.131:3010/cadastroclientespost", {
+      fetch("http://10.1.1.136:3010/cadastroticketpost", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -179,11 +145,10 @@ export default defineComponent({
       return `${day}/${month}/${year}`;
     },
     resetForm(): void {
-      this.nomeCliente = "";
-      this.cidade = "";
-      this.telefone = "";
+      this.nomeUsuario = "";
+      
       this.servico = "";
-      this.valor = "";
+      
       this.maquina = "";
     },
   },

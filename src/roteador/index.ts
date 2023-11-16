@@ -58,21 +58,21 @@ const roteador = createRouter({
 });
 
 // Add beforeEach navigation guard
-roteador.beforeEach((to, from, next) => {
-  const authData = localStorage.getItem('authData');
-  if (to.name !== 'Login' && (!authData || isTokenExpired(authData))) {
-    next('/login');
-  } else {
-    next();
-  }
-});
+// roteador.beforeEach((to, from, next) => {
+//   const authData = localStorage.getItem('authData');
+//   if (to.name !== 'Login' && (!authData || isTokenExpired(authData))) {
+//     next('/login');
+//   } else {
+//     next();
+//   }
+// });
 
-function isTokenExpired(authData: string | null): boolean {
-  if (authData) {
-    const { expiration } = JSON.parse(authData);
-    return new Date().getTime() > expiration;
-  }
-  return true;
-}
+// function isTokenExpired(authData: string | null): boolean {
+//   if (authData) {
+//     const { expiration } = JSON.parse(authData);
+//     return new Date().getTime() > expiration;
+//   }
+//   return true;
+// }
 
 export default roteador;

@@ -100,7 +100,7 @@ export default defineComponent({
   methods: {
     
     fetchDados(): void {
-      fetch('http://177.136.214.131:3010/cadastroclientesget')
+      fetch('http://10.1.1.6:3010/cadastroticketget')
         .then(response => response.json())
         .then((data: ICliente[]) => {
           this.data = data.map(item => ({
