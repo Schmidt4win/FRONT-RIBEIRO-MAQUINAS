@@ -3,7 +3,7 @@
     <div class="card login-card">
       <div class="card-content">
         <div class="img-container has-text-centered">
-          <img src="../assets/logo.jpg" alt="Logo" class="rounded-image" />
+          <img src="../assets/login-sem-fundo.png" alt="Logo" class="rounded-image" />
         </div>
         <div class="field">
           <label class="label">Username</label>
@@ -45,16 +45,18 @@ export default defineComponent({
     async login() {
       try {
         const response = await axios.post(
-          'http://177.136.214.131:3010/login',
+          'http://10.1.1.136:3010/login',
           {
             name: this.name,
             password: this.password,
           }
         );
         if (response.status === 201) {
+          
+
           // Save token and username in local storage
           const token = response.data.token;
-          const username = response.data.username;
+          const username = response.data.name;
           const expiration = new Date().getTime() + 2 * 60 * 60 * 1000; // 2 hours from now
           const authData = {
             token: token,
@@ -62,6 +64,7 @@ export default defineComponent({
             expiration: expiration,
           };
           localStorage.setItem('authData', JSON.stringify(authData));
+          console.log(authData)
 
           // Redirect to home route
           this.$router.push('/');

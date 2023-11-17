@@ -2,20 +2,36 @@
   <div class="mr-3 page-container">
     <div class="search-container">
       <input class="input filtro box" type="text" v-model="searchQuery"
-        placeholder="Procure pelo nome do ticket, valor, setor, etc..." />
+        placeholder="Procure pelo nome do ticket, setor, etc..." />
     </div>
-    <div class="client-container">
-      <Box class="box-container" v-for="ticket in filteredtickets" :key="ticket._id">
+    <div class="client-container" >
+      <Box class="box-container" v-for="ticket in filteredtickets" :key="ticket._id" :style="{ backgroundColor: getStatusColor(ticket.status) }"
+>
         <div class="columns">
           <div class="column">
             <strong class="label">Nome do Usuario:</strong>
             {{ ticket.nomeUsuario }}
           </div>
           <div class="column">
-            <strong class="label">Modelo da Maquina:</strong>
-            <p class="servico">{{ ticket.maquina }}</p>
+            <strong class="label">Setor:</strong>
+            <p class="servico">{{ ticket.setor }}</p>
           </div>
-          
+          <div class="column">
+            <strong class="label">Status:</strong>
+            <p class="servico">{{ ticket.status }}</p>
+          </div>
+          <div class="column">
+            <strong class="label">Descrição:</strong>
+            <p class="servico">{{ ticket.servico }}</p>
+          </div>
+          <div class="column">
+            <strong class="label">Abertura:</strong>
+            <p class="servico">{{ ticket.data_hora }}</p>
+          </div>
+          <div class="column">
+            <strong class="label">Atualização:</strong>
+            <p class="servico">{{ ticket.data_hora_att }}</p>
+          </div>
           <button class="detalhes-button ml-2 is-danger" @click="toggleDropdown(ticket._id)">
             <span class="icon is-small">
               <i class="fa-solid fa-circle-info"></i>
@@ -37,23 +53,28 @@
           <div class="dropdown-content">
             <div class="tabela columns is-30">
               <div class="column">
-                <strong class="label">ticket:</strong>
+                <strong class="label">Usuario:</strong>
                 <Box class="tabela-todos">{{ ticket.nomeUsuario }}</Box>
               </div>
               <div class="column">
-                <strong class="label">Serviço:</strong>
+                <strong class="label">Descrição:</strong>
                 <Box class="tabela-servico"> {{ ticket.servico }} </Box>
               </div>
-             
+              <div class="column">
+                <strong class="label">Solução:</strong>
+                <Box class="tabela-servico"> {{ ticket.solucao }} </Box>
+              </div>
+        
+
               <div class="column">
                 <strong class="label">Data:</strong>
                 <Box class="tabela-todos">{{ ticket.data }}</Box>
               </div>
               <div class="column">
-                <strong class="label">setor:</strong>
+                <strong class="label">Setor:</strong>
                 <Box class="tabela-todos">{{ ticket.setor }}</Box>
               </div>
-             
+
             </div>
           </div>
         </div>
@@ -102,12 +123,18 @@
             </div>
           </div>
           <div class="field">
+            <label class="label">Solucao:</label>
+            <div class="control">
+              <input class="input" type="text" v-model="editedticket.solucao" />
+            </div>
+          </div>
+          <div class="field">
             <label class="label">Descrição do serviço:</label>
             <div class="control">
               <input class="input" type="text" v-model="editedticket.servico" />
             </div>
           </div>
-                   
+
           <div class="field">
             <label class="label">Data:</label>
             <div class="control">
@@ -115,9 +142,28 @@
             </div>
           </div>
           <div class="field">
-            <label class="label">setor:</label>
+            <label class="label">Setor:</label>
             <div class="control">
               <input class="input" type="text" v-model="editedticket.setor" />
+            </div>
+          </div>
+          <div class="field">
+            
+            <div class="control">
+              <div class="field">
+                <label for="status" class="label">Status:</label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select v-model="editedticket.status" required>
+                      <option disabled value="">Selecione o status</option>
+                      <option>Em Validação</option>
+                      <option>Resolvido</option>
+                      <option>Em Andamento</option>
+                      <option>Aguardando Pixeon</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -160,7 +206,10 @@ export default defineComponent({
         servico: "",
         data_hora: "",
         data: "",
-        maquina: ""
+        maquina: "",
+        solucao: "",
+        status: "",
+        data_hora_att: "",
       },
     };
   },
@@ -192,14 +241,29 @@ export default defineComponent({
   methods: {
     async fetchticketData() {
       try {
-        const response = await fetch("http://10.1.1.136:3010/cadastroticketget");
+        const response = await fetch("http://10.1.1.136:3010/ticketget");
         const data = await response.json();
-        console.log(data);
+        
         this.fetchedtickets = data;
       } catch (error) {
         console.error("Error fetching ticket data:", error);
       }
     },
+    getStatusColor(status: string): string {
+      
+  switch (status) {
+    case 'Resolvido':
+      return 'lightgreen';
+    case 'Em Validação':
+      return 'lightyellow'; // Adapte as cores conforme necessário
+    case 'Em Andamento':
+      return 'yellow';
+    case 'Aguardando Pixeon':
+      return 'lightblue';
+    default:
+      return 'red';
+  }
+},
     toggleDropdown(ticketId: string) {
       if (this.activeDropdown === ticketId) {
         this.activeDropdown = null;
@@ -217,7 +281,7 @@ export default defineComponent({
     },
     async deleteticket(ticketId: string) {
       try {
-        const response = await fetch(`http://177.136.214.131:3010/cadastroticketsdelete/${ticketId}`, {
+        const response = await fetch(`http://10.1.1.136:3010/cadastroticketdelete/${ticketId}`, {
           method: "DELETE"
         });
         const data = await response.json();
@@ -252,18 +316,21 @@ export default defineComponent({
         _id: "",
         nomeUsuario: "",
         setor: "",
-        
+        status: "",
         servico: "",
-        
+        solucao: "",
         data_hora: "",
         data: "",
-        maquina: ""
+        maquina: "",
+        data_hora_att: "",
       };
     },
     async confirmEditticket() {
+      this.editedticket.data_hora_att = new Date().toLocaleString("pt-BR");
+      
       try {
         const response = await fetch(
-          `http://177.136.214.131:3010/cadastroticketsput/${this.editedticket._id}`,
+          `http://10.1.1.136:3010/cadastroticketput/${this.editedticket._id}`,
           {
             method: "PUT",
             headers: {
@@ -302,14 +369,57 @@ export default defineComponent({
 </script>
 
 <style scoped>
+@media only screen and (max-width: 768px) {
+  header {
+    padding: 2.5rem;
+    height: auto;
+    height: 100hv;
+  }
+
+  .search-container {
+    padding: 1.5rem 0;
+    margin-left: 20px;
+    height: 100hv;
+  }
+
+  .client-container {
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding: 1.25rem;
+  }
+}
+
+/* Estilos para dispositivos móveis */
+@media only screen and (max-width: 480px) {
+  header {
+    padding: 1rem;
+    height: 100hv;
+  }
+
+  .search-container {
+    padding: 1.5rem 0;
+    margin-left: 20px;
+    height: 100hv;
+  }
+
+  .client-container {
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding: 1.25rem;
+  }
+
+}
+
 .search-container {
   padding: 1.5rem 0;
   margin-left: 20px;
+
 }
 
-.dropdown-content{
+.dropdown-content {
   border: 1px solid #e96d13;
   padding: 1.25rem;
+  width: 100%;
 }
 
 .filtro {
@@ -327,9 +437,9 @@ export default defineComponent({
 .tabela-servico {
   overflow-y: auto;
   overflow-x: auto;
-  max-width: 500px;
+  max-width: 100%;
   max-height: 200px;
-  word-break: normal;  
+  word-break: normal;
 }
 
 .servico {
@@ -437,5 +547,4 @@ export default defineComponent({
 
 .modal-card-body {
   background-color: aliceblue;
-}
-</style>
+}</style>

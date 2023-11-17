@@ -14,18 +14,14 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'App',
-  components: {
-   
+  components: {   
   },
   data() {
     return {
       modoEscuroAtivo: false
     }
   },
-
-
   methods: {
-
     trocarTema(modoEscuroAtivo: boolean) {
       this.modoEscuroAtivo = modoEscuroAtivo
     }

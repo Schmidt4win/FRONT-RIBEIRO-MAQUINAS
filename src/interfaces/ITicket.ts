@@ -6,4 +6,7 @@ export default interface ICliente {
     data_hora: string;
     data: string;
     maquina: string;
+    status: string;
+    solucao: string;
+    data_hora_att: string;
   }

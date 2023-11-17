@@ -1,28 +1,33 @@
 <template>
   <header>
     <h1>
-      <img src="../assets/logo.jpg" alt="">
+      <img src="../assets/logo-sem-fundo.png" alt="">
     </h1>
-    <button class="button" :class="{ 'is-dark': modoEscuroAtivo }" @click="alterarTema">
+    <!-- <button class="button" :class="{ 'is-dark': modoEscuroAtivo }" @click="alterarTema">
       {{ textoBotao }}
-    </button>
+    </button> -->
     <nav class="panel mt-5">
       <ul>
         <li>
           <RouterLink to="/serviço" class="link">
-            <i class="fas fa-pen"></i> Cadastro de Serviço
+            <i class="fas fa-pen"></i> Cadastro de Ticket
           </RouterLink>
         </li>
         <li>
           <RouterLink to="/cliente" class="link">
-            <i class="fas fa-users"></i> Cliente
+            <i class="fas fa-users"></i> Tickets
           </RouterLink>
         </li>
         <li>
+          <RouterLink to="/meuticket" class="link">
+            <i class="fas fa-users"></i> Meus Tickets
+          </RouterLink>
+        </li>
+        <!-- <li>
           <RouterLink to="/filtro" class="link">
             <i class="fa-sharp fa-solid fa-filter"></i> Filtro
           </RouterLink>
-        </li>
+        </li> -->
       </ul>
     </nav>
     <button class="button logout-button" @click="logout">
@@ -34,7 +39,7 @@
 <style scoped>
 header {
   padding: 1rem;
-  background: #496678;
+  background: aliceblue;
   width: 100%;
   height: 100vh;
   text-align: center;
@@ -55,10 +60,12 @@ header {
 
   .button {
     font-size: 0.8rem;
+    
   }
 
   .panel {
     margin-top: 0.5rem;
+    padding: 1.25rem;
   }
 
   .link {
@@ -86,7 +93,7 @@ header {
 }
 
 .link {
-  color: #fff;
+  color: black;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -98,17 +105,17 @@ header {
 }
 
 .link:hover {
-  color: #faf0ca;
+  color: red;
 }
 
 .logout-button {
   margin-top: 1rem;
   background-color: #ff261b;
-  color: #fff;
+  color: black;
 }
 
 .logout-button:hover {
-  background-color: #e96d13;
+  background-color: aliceblue;
   color: #faf0ca;
 }
 </style>

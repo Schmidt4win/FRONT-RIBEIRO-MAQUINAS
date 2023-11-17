@@ -6,6 +6,7 @@ import ServiceForm from "../views/ServiceForm.vue";
 import Login from "../views/Login.vue";
 import Cliente from "../components/Cliente.vue";
 import FiltroVue from "../components/FiltroVue.vue";
+import meuTicket from "../components/MeusTickets.vue"
 
 
 
@@ -20,12 +21,7 @@ const rotas: RouteRecordRaw[] = [
     component: HomeView,
     redirect: '/cliente',
     children:
-      [
-        {
-          path: "/",
-          name: "Cliente",
-          component: Cliente,
-        },
+      [        
       {
         path: "/cliente",
         name: "Cliente",
@@ -41,7 +37,11 @@ const rotas: RouteRecordRaw[] = [
         name: "filtro",
         component: FiltroVue,
       },
-      
+      {
+        path: "/meuticket",
+        name: "meuticket",
+        component: meuTicket,
+      },       
       ]
   },
   {
@@ -58,21 +58,21 @@ const roteador = createRouter({
 });
 
 // Add beforeEach navigation guard
-// roteador.beforeEach((to, from, next) => {
-//   const authData = localStorage.getItem('authData');
-//   if (to.name !== 'Login' && (!authData || isTokenExpired(authData))) {
-//     next('/login');
-//   } else {
-//     next();
-//   }
-// });
+roteador.beforeEach((to, from, next) => {
+  const authData = localStorage.getItem('authData');
+  if (to.name !== 'Login' && (!authData || isTokenExpired(authData))) {
+    next('/login');
+  } else {
+    next();
+  }
+});
 
-// function isTokenExpired(authData: string | null): boolean {
-//   if (authData) {
-//     const { expiration } = JSON.parse(authData);
-//     return new Date().getTime() > expiration;
-//   }
-//   return true;
-// }
+function isTokenExpired(authData: string | null): boolean {
+  if (authData) {
+    const { expiration } = JSON.parse(authData);
+    return new Date().getTime() > expiration;
+  }
+  return true;
+}
 
 export default roteador;

@@ -30,7 +30,7 @@ export default defineComponent({
   },
   data() {
     return {
-      modoEscuroAtivo: true
+      modoEscuroAtivo: false
     }
   },
   computed: {

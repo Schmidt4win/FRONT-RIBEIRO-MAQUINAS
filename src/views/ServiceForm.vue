@@ -1,6 +1,20 @@
 <template>
   <div class="container form-container">
     <h1 class="title is-4 has-text-centered mb-5">Cadastro de Serviço</h1>
+    <div class="field">
+  <label for="status" class="label">Status:</label>
+  <div class="control">
+    <div class="select is-fullwidth">
+      <select v-model="status" required>
+        <option disabled value="">Selecione o status</option>
+        <option>Em Validação</option>
+        <option>Resolvido</option>
+        <option>Em Andamento</option>
+        <option>Aguardando Pixeon</option>
+      </select>
+    </div>
+  </div>
+</div>
     <form @submit.prevent="submitForm" class="form-content">
       <div class="columns is-variable is-2 is-mobile">
         <div class="column is-half">
@@ -32,7 +46,6 @@
       </div>
 
       <div class="columns is-variable is-2 is-mobile">
-     
         <div class="column is-half">
           <div class="field">
             <label for="servico" class="label">Descrição:</label>
@@ -45,6 +58,22 @@
               />
             </div>
           </div>
+        </div>
+     
+        <div class="column is-half">
+          <div class="field">
+            <label for="servico" class="label">Solução:</label>
+            <div class="control">
+              <input
+                type="text"
+                class="input is-flexible"
+                v-model="solucao"
+                required
+              />
+            </div>
+         
+          </div>
+         
         </div>
       </div>
 
@@ -64,7 +93,7 @@
         </div>
         <div class="column">
           <div class="field">
-            <label for="cidade" class="label">Conf da Maquina:</label>
+            <label for="cidade" class="label">Conf da Maquina/Sistema:</label>
             <div class="control">
               <input
                 type="text"
@@ -75,13 +104,16 @@
             </div>
           </div>
         </div>
+        
        
       </div>
+      
 
       <div class="field is-grouped is-grouped-left">
         <div class="control">
           <button type="submit" class="button is-primary">Enviar</button>
         </div>
+        
       </div>
     </form>
   </div>
@@ -102,10 +134,24 @@ export default defineComponent({
       servico: "",
       data: "",
       maquina: "",
+      solucao: "",
+      status: "",
+      authData: {
+        username: "",
+      },
     };
   },
   methods: {
     submitForm(): void {
+      const authData = localStorage.getItem("authData");
+  if (authData === null) {
+    console.error("Authentication data is missing from localStorage.");
+    return;
+  }
+  const { username } = JSON.parse(authData)
+
+  const user = username ?? "Unknown User";
+  console.log(user);
       const data = {
         nomeUsuario: this.nomeUsuario,
         setor: this.setor,
@@ -113,6 +159,10 @@ export default defineComponent({
         data_hora: new Date().toLocaleString("pt-BR"),
         data: this.formatDate(this.data), // Format the date before sending
         maquina: this.maquina,
+        solucao: this.solucao,
+        status: this.status,
+        user: user,
+                
       };
 
       console.log(data);
@@ -146,10 +196,11 @@ export default defineComponent({
     },
     resetForm(): void {
       this.nomeUsuario = "";
-      
       this.servico = "";
-      
       this.maquina = "";
+      this.solucao = "";
+      this.setor = "";
+      this.status = "";
     },
   },
   setup() {
@@ -166,6 +217,11 @@ export default defineComponent({
 <style scoped>
 .label {
   color: #e96d13;
+}
+
+.label-status {
+  color: #e96d13;
+  max-width: 200px;
 }
 
 .title {
