@@ -1,12 +1,30 @@
 <template>
   <div class="mr-3 page-container">
     <div class="search-container">
+
       <input class="input filtro box" type="text" v-model="searchQuery"
         placeholder="Procure pelo nome do ticket, setor, etc..." />
+      <div>
+        <p>Total de Tickets: {{ totalTickets }}</p>
+      </div>
+      <div class="ticket-count">
+
+        <p v-for="category in categories" :key="category.name">
+          {{ category.name }}: {{ categoryCount(category.name) }}
+        </p>
+
+      </div>
+
+      <div>
+        <p v-for="status in statuses" :key="status.name">
+          {{ status.name }}: {{ status.count }}
+        </p>
+      </div>
     </div>
-    <div class="client-container" >
-      <Box class="box-container" v-for="ticket in filteredtickets" :key="ticket._id" :style="{ backgroundColor: getStatusColor(ticket.status) }"
->
+
+    <div class="client-container">
+      <Box class="box-container" v-for="ticket in filteredtickets" :key="ticket._id"
+        :style="{ backgroundColor: getStatusColor(ticket.status) }">
         <div class="columns">
           <div class="column">
             <strong class="label">Nome do Usuario:</strong>
@@ -18,9 +36,15 @@
           </div>
           <div class="column">
             <strong class="label">Status:</strong>
-            <p class="servico">{{ ticket.status }}</p>
+            <p class="servico">{{ ticket.status.toLocaleUpperCase() }}</p>
           </div>
-          <div class="column">
+          
+          
+          <div v-if="ticket.atualizado" class="column">
+            <strong class="label">Descrição:</strong>
+            <p class="servico">{{ ticket.atualizado_newtext }}</p>
+          </div>
+          <div v-else class="column">
             <strong class="label">Descrição:</strong>
             <p class="servico">{{ ticket.servico }}</p>
           </div>
@@ -31,6 +55,10 @@
           <div class="column">
             <strong class="label">Atualização:</strong>
             <p class="servico">{{ ticket.data_hora_att }}</p>
+          </div>
+          <div class="column">
+            <strong class="label">Usuario Responsável:</strong>
+            <p class="servico">{{ ticket.user.toLocaleUpperCase() }}</p>
           </div>
           <button class="detalhes-button ml-2 is-danger" @click="toggleDropdown(ticket._id)">
             <span class="icon is-small">
@@ -49,7 +77,7 @@
           </button>
         </div>
         <div v-if="activeDropdown === ticket._id" class="dropdown columns is-30">
-          <!-- Dropdown content -->
+
           <div class="dropdown-content">
             <div class="tabela columns is-30">
               <div class="column">
@@ -64,7 +92,7 @@
                 <strong class="label">Solução:</strong>
                 <Box class="tabela-servico"> {{ ticket.solucao }} </Box>
               </div>
-        
+
 
               <div class="column">
                 <strong class="label">Data:</strong>
@@ -81,7 +109,7 @@
       </Box>
     </div>
 
-    <!-- Delete confirmation modal -->
+
     <div class="modal" :class="{ 'is-active': isDeleteModalOpen }">
       <div class="modal-background"></div>
       <div class="modal-card">
@@ -131,7 +159,7 @@
           <div class="field">
             <label class="label">Descrição do serviço:</label>
             <div class="control">
-              <input class="input" type="text" v-model="editedticket.servico" />
+              <input class="input" type="text" v-model="editedticket.atualizado_newtext" />
             </div>
           </div>
 
@@ -148,7 +176,7 @@
             </div>
           </div>
           <div class="field">
-            
+
             <div class="control">
               <div class="field">
                 <label for="status" class="label">Status:</label>
@@ -179,7 +207,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent } from "vue";
 import ITicket from "@/interfaces/ITicket"
 import Box from "./Box.vue";
 import { TipoNotificacao } from "@/interfaces/INotificação";
@@ -210,6 +238,8 @@ export default defineComponent({
         solucao: "",
         status: "",
         data_hora_att: "",
+        atualizado_newtext: "",
+        atualizado: false,
       },
     };
   },
@@ -237,33 +267,66 @@ export default defineComponent({
         });
       }
     },
+    statuses(): { name: string; count: number }[] {
+      const uniqueStatuses: Set<string> = new Set();
+      this.fetchedtickets.forEach((ticket: ITicket) => {
+        uniqueStatuses.add(ticket.status);
+      });
+
+      const statusesWithCount = Array.from(uniqueStatuses).map((status: string) => ({
+        name: status,
+        count: this.statusCount(status),
+      }));
+
+      return statusesWithCount;
+    },
+
+    totalTickets(): number {
+      return this.fetchedtickets.length;
+    },
+
+    categories(): { name: string }[] {
+      const uniqueCategories: Set<string> = new Set();
+      this.fetchedtickets.forEach((ticket: ITicket) => {
+        uniqueCategories.add(ticket.setor);
+      });
+      return Array.from(uniqueCategories).map((category: string) => ({ name: category }));
+    },
   },
   methods: {
+    statusCount(statusName: string): number {
+      return this.fetchedtickets.filter((ticket: ITicket) => ticket.status === statusName).length;
+    },
+
+    categoryCount(categoryName: string): number {
+      return this.fetchedtickets.filter((ticket: ITicket) => ticket.setor === categoryName).length;
+
+    },
     async fetchticketData() {
       try {
         const response = await fetch("http://10.1.1.136:3010/ticketget");
         const data = await response.json();
-        
+
         this.fetchedtickets = data;
       } catch (error) {
         console.error("Error fetching ticket data:", error);
       }
     },
     getStatusColor(status: string): string {
-      
-  switch (status) {
-    case 'Resolvido':
-      return 'lightgreen';
-    case 'Em Validação':
-      return 'lightyellow'; // Adapte as cores conforme necessário
-    case 'Em Andamento':
-      return 'yellow';
-    case 'Aguardando Pixeon':
-      return 'lightblue';
-    default:
-      return 'red';
-  }
-},
+
+      switch (status) {
+        case 'Resolvido':
+          return 'lightgreen';
+        case 'Em Validação':
+          return 'lightyellow';
+        case 'Em Andamento':
+          return 'yellow';
+        case 'Aguardando Pixeon':
+          return 'lightblue';
+        default:
+          return 'red';
+      }
+    },
     toggleDropdown(ticketId: string) {
       if (this.activeDropdown === ticketId) {
         this.activeDropdown = null;
@@ -323,11 +386,14 @@ export default defineComponent({
         data: "",
         maquina: "",
         data_hora_att: "",
+        atualizado_newtext: "",
+        atualizado: false,      
       };
     },
     async confirmEditticket() {
       this.editedticket.data_hora_att = new Date().toLocaleString("pt-BR");
-      
+      this.editedticket.atualizado = true;
+
       try {
         const response = await fetch(
           `http://10.1.1.136:3010/cadastroticketput/${this.editedticket._id}`,
@@ -389,7 +455,7 @@ export default defineComponent({
   }
 }
 
-/* Estilos para dispositivos móveis */
+
 @media only screen and (max-width: 480px) {
   header {
     padding: 1rem;
@@ -411,9 +477,11 @@ export default defineComponent({
 }
 
 .search-container {
-  padding: 1.5rem 0;
-  margin-left: 20px;
-
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  max-height: 100px;
 }
 
 .dropdown-content {
@@ -425,7 +493,7 @@ export default defineComponent({
 .filtro {
   background-color: aliceblue;
   max-width: 600px;
-  border: 1px solid #e96d13;
+  border: 1px solid #1b53f8;
 }
 
 .tabela-todos {
@@ -457,12 +525,17 @@ export default defineComponent({
 }
 
 .box-container {
-  border: 1px solid #e96d13;
+  border: 1px solid #1b53f8;
 }
 
 .label {
-  color: #e96d13;
+  color: #1b53f8;
   font-weight: bold;
+}
+
+.ticket-count {
+  max-height: 100px;
+  overflow-y: auto;
 }
 
 .detalhes-button {
@@ -472,7 +545,7 @@ export default defineComponent({
 }
 
 .detalhes-button .icon {
-  color: #e96d13;
+  color: #1b53f8;
 }
 
 .editar-button {
@@ -482,7 +555,7 @@ export default defineComponent({
 }
 
 .editar-button .icon {
-  color: #e96d13;
+  color: #1b53f8;
 }
 
 .deletar-button {
@@ -492,7 +565,7 @@ export default defineComponent({
 }
 
 .deletar-button .icon {
-  color: #e96d13;
+  color: #1b53f8;
 }
 
 /* Modal styles */
@@ -506,9 +579,9 @@ export default defineComponent({
 }
 
 .button {
-  border: 1px solid #e96d13;
-  background-color: #496678;
-  color: #e96d13;
+  border: 1px solid #1b53f8;
+  background-color: aliceblue;
+  color: #1b53f8;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -531,7 +604,7 @@ export default defineComponent({
 }
 
 .modal-card-title {
-  color: #e96d13;
+  color: #1b53f8;
   font-weight: bold;
 }
 
@@ -547,4 +620,5 @@ export default defineComponent({
 
 .modal-card-body {
   background-color: aliceblue;
-}</style>
+}
+</style>

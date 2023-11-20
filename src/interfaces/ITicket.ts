@@ -1,4 +1,4 @@
-export default interface ICliente {
+export default interface ITicket {
     _id: string;
     nomeUsuario: string;
     setor: string;
@@ -9,4 +9,7 @@ export default interface ICliente {
     status: string;
     solucao: string;
     data_hora_att: string;
+    atualizado: boolean ;
+    atualizado_newtext: string;
+
   }

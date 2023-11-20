@@ -7,6 +7,7 @@ export default interface ICliente {
     valor: number;
     data_hora: string;
     data: string;
-    maquina: string
+    maquina: string;
+    user: string;
   }
   
