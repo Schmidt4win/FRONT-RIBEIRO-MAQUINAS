@@ -11,5 +11,5 @@ export default interface ITicket {
     data_hora_att: string;
     atualizado: boolean ;
     atualizado_newtext: string;
-
+    user: string;
   }

@@ -1,9 +1,25 @@
 <template>
   <div class="mr-3 page-container">
     <div class="search-container">
+
       <input class="input filtro box" type="text" v-model="searchQuery"
         placeholder="Procure pelo nome do ticket, setor, etc..." />
+      <div class="ticket-total">
+        <Box class="teste" >Total de Tickets: {{ totalTickets }}</Box>
+      </div>
+      <div class="ticket-count">
+        <Box class="teste"  v-for="category in categories" :key="category.name">
+          {{ category.name }}: {{ categoryCount(category.name) }}
+        </Box>
+      </div>
+
+      <div class="ticket-count-status">
+        <Box class="teste" v-for="status in statuses" :key="status.name" >
+          {{ status.name }}: {{ status.count }}
+        </Box>
+      </div>
     </div>
+
     <div class="client-container">
       <Box class="box-container" v-for="ticket in filteredtickets" :key="ticket._id"
         :style="{ backgroundColor: getStatusColor(ticket.status) }">
@@ -18,9 +34,15 @@
           </div>
           <div class="column">
             <strong class="label">Status:</strong>
-            <p class="servico">{{ ticket.status }}</p>
+            <p class="servico">{{ ticket.status.toLocaleUpperCase() }}</p>
           </div>
-          <div class="column">
+          
+          
+          <div v-if="ticket.atualizado" class="column">
+            <strong class="label">Descrição:</strong>
+            <p class="servico">{{ ticket.atualizado_newtext }}</p>
+          </div>
+          <div v-else class="column">
             <strong class="label">Descrição:</strong>
             <p class="servico">{{ ticket.servico }}</p>
           </div>
@@ -31,6 +53,10 @@
           <div class="column">
             <strong class="label">Atualização:</strong>
             <p class="servico">{{ ticket.data_hora_att }}</p>
+          </div>
+          <div class="column">
+            <strong class="label">Usuario Responsável:</strong>
+            <p class="servico">{{ ticket.user.toLocaleUpperCase() }}</p>
           </div>
           <button class="detalhes-button ml-2 is-danger" @click="toggleDropdown(ticket._id)">
             <span class="icon is-small">
@@ -49,7 +75,7 @@
           </button>
         </div>
         <div v-if="activeDropdown === ticket._id" class="dropdown columns is-30">
-          <!-- Dropdown content -->
+
           <div class="dropdown-content">
             <div class="tabela columns is-30">
               <div class="column">
@@ -81,7 +107,7 @@
       </Box>
     </div>
 
-    <!-- Delete confirmation modal -->
+
     <div class="modal" :class="{ 'is-active': isDeleteModalOpen }">
       <div class="modal-background"></div>
       <div class="modal-card">
@@ -131,7 +157,7 @@
           <div class="field">
             <label class="label">Descrição do serviço:</label>
             <div class="control">
-              <input class="input" type="text" v-model="editedticket.servico" />
+              <input class="input" type="text" v-model="editedticket.atualizado_newtext" />
             </div>
           </div>
 
@@ -177,9 +203,9 @@
     </div>
   </div>
 </template>
-  
+
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent } from "vue";
 import ITicket from "@/interfaces/ITicket"
 import Box from "./Box.vue";
 import { TipoNotificacao } from "@/interfaces/INotificação";
@@ -187,7 +213,7 @@ import useNotificador from "@/hooks/notificador";
 import { useStore } from "@/store";
 
 export default defineComponent({
-  name: "meuTicket",
+  name: "ticketTeste",
   components: {
     Box,
   },
@@ -210,6 +236,8 @@ export default defineComponent({
         solucao: "",
         status: "",
         data_hora_att: "",
+        atualizado_newtext: "",
+        atualizado: false,
       },
     };
   },
@@ -237,8 +265,41 @@ export default defineComponent({
         });
       }
     },
+    statuses(): { name: string; count: number }[] {
+      const uniqueStatuses: Set<string> = new Set();
+      this.fetchedtickets.forEach((ticket: ITicket) => {
+        uniqueStatuses.add(ticket.status);
+      });
+
+      const statusesWithCount = Array.from(uniqueStatuses).map((status: string) => ({
+        name: status,
+        count: this.statusCount(status),
+      }));
+
+      return statusesWithCount;
+    },
+
+    totalTickets(): number {
+      return this.fetchedtickets.length;
+    },
+
+    categories(): { name: string }[] {
+      const uniqueCategories: Set<string> = new Set();
+      this.fetchedtickets.forEach((ticket: ITicket) => {
+        uniqueCategories.add(ticket.setor);
+      });
+      return Array.from(uniqueCategories).map((category: string) => ({ name: category }));
+    },
   },
   methods: {
+    statusCount(statusName: string): number {
+      return this.fetchedtickets.filter((ticket: ITicket) => ticket.status === statusName).length;
+    },
+
+    categoryCount(categoryName: string): number {
+      return this.fetchedtickets.filter((ticket: ITicket) => ticket.setor === categoryName).length;
+
+    },
     async fetchticketData() {
       try {
         const authDataString: string | null = localStorage.getItem('authData');
@@ -262,7 +323,7 @@ export default defineComponent({
         case 'Resolvido':
           return 'lightgreen';
         case 'Em Validação':
-          return 'lightyellow'; // Adapte as cores conforme necessário
+          return 'lightyellow';
         case 'Em Andamento':
           return 'yellow';
         case 'Aguardando Pixeon':
@@ -330,10 +391,13 @@ export default defineComponent({
         data: "",
         maquina: "",
         data_hora_att: "",
+        atualizado_newtext: "",
+        atualizado: false,      
       };
     },
     async confirmEditticket() {
       this.editedticket.data_hora_att = new Date().toLocaleString("pt-BR");
+      this.editedticket.atualizado = true;
 
       try {
         const response = await fetch(
@@ -374,8 +438,13 @@ export default defineComponent({
   },
 });
 </script>
-  
+
 <style scoped>
+.teste {
+  padding: 1rem;
+  margin: 10px;
+  border: solid 1px #1b53f8;
+}
 @media only screen and (max-width: 768px) {
   header {
     padding: 2.5rem;
@@ -396,7 +465,7 @@ export default defineComponent({
   }
 }
 
-/* Estilos para dispositivos móveis */
+
 @media only screen and (max-width: 480px) {
   header {
     padding: 1rem;
@@ -418,9 +487,11 @@ export default defineComponent({
 }
 
 .search-container {
-  padding: 1.5rem 0;
-  margin-left: 20px;
-
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  max-height: 100px;
 }
 
 .dropdown-content {
@@ -432,7 +503,9 @@ export default defineComponent({
 .filtro {
   background-color: aliceblue;
   max-width: 600px;
-  border: 1px solid #e96d13;
+  border: 1px solid #1b53f8;
+  margin-top: 70px;
+  margin-left: 20px;
 }
 
 .tabela-todos {
@@ -458,18 +531,46 @@ export default defineComponent({
 }
 
 .client-container {
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 200px);
   overflow-y: auto;
   padding: 1.25rem;
+  margin-top: 50px;
 }
 
 .box-container {
-  border: 1px solid #e96d13;
+  border: 1px solid #1b53f8;
 }
 
 .label {
-  color: #e96d13;
+  color: #1b53f8;
   font-weight: bold;
+}
+
+.ticket-count {
+  max-height: 150px;
+  overflow-y: auto;
+  width: 550px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 50px;
+  
+}
+.ticket-total {
+  max-height: 150px;
+  overflow-y: auto;
+  width: 200px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 50px;
+  
+}
+.ticket-count-status {
+  max-height: 200px;
+  overflow-y: auto;
+  width: 380px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 50px;
 }
 
 .detalhes-button {
@@ -479,7 +580,7 @@ export default defineComponent({
 }
 
 .detalhes-button .icon {
-  color: #e96d13;
+  color: #1b53f8;
 }
 
 .editar-button {
@@ -489,7 +590,7 @@ export default defineComponent({
 }
 
 .editar-button .icon {
-  color: #e96d13;
+  color: #1b53f8;
 }
 
 .deletar-button {
@@ -499,7 +600,7 @@ export default defineComponent({
 }
 
 .deletar-button .icon {
-  color: #e96d13;
+  color: #1b53f8;
 }
 
 /* Modal styles */
@@ -513,9 +614,9 @@ export default defineComponent({
 }
 
 .button {
-  border: 1px solid #e96d13;
-  background-color: #496678;
-  color: #e96d13;
+  border: 1px solid #1b53f8;
+  background-color: aliceblue;
+  color: #1b53f8;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -524,8 +625,10 @@ export default defineComponent({
   color: #496678;
 }
 
+
 .input:focus {
   box-shadow: 0 0 0 0.125em #496678;
+
 }
 
 .modal-card-foot .button {
@@ -538,7 +641,7 @@ export default defineComponent({
 }
 
 .modal-card-title {
-  color: #e96d13;
+  color: #1b53f8;
   font-weight: bold;
 }
 
@@ -556,4 +659,3 @@ export default defineComponent({
   background-color: aliceblue;
 }
 </style>
-  

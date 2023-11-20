@@ -4,21 +4,19 @@
 
       <input class="input filtro box" type="text" v-model="searchQuery"
         placeholder="Procure pelo nome do ticket, setor, etc..." />
-      <div>
-        <p>Total de Tickets: {{ totalTickets }}</p>
+      <div class="ticket-total">
+        <Box>Total de Tickets: {{ totalTickets }}</Box>
       </div>
       <div class="ticket-count">
-
-        <p v-for="category in categories" :key="category.name">
+        <Box class="teste" v-for="category in categories" :key="category.name">
           {{ category.name }}: {{ categoryCount(category.name) }}
-        </p>
-
+        </Box>
       </div>
 
-      <div>
-        <p v-for="status in statuses" :key="status.name">
+      <div class="ticket-count-status">
+        <Box class="teste" v-for="status in statuses" :key="status.name" >
           {{ status.name }}: {{ status.count }}
-        </p>
+        </Box>
       </div>
     </div>
 
@@ -435,6 +433,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.teste {
+  padding: 1rem;
+  margin: 10px;
+}
 @media only screen and (max-width: 768px) {
   header {
     padding: 2.5rem;
@@ -494,6 +496,8 @@ export default defineComponent({
   background-color: aliceblue;
   max-width: 600px;
   border: 1px solid #1b53f8;
+  margin-top: 70px;
+  margin-left: 20px;
 }
 
 .tabela-todos {
@@ -519,9 +523,10 @@ export default defineComponent({
 }
 
 .client-container {
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 200px);
   overflow-y: auto;
   padding: 1.25rem;
+  margin-top: 50px;
 }
 
 .box-container {
@@ -534,8 +539,30 @@ export default defineComponent({
 }
 
 .ticket-count {
-  max-height: 100px;
+  max-height: 150px;
   overflow-y: auto;
+  width: 550px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 50px;
+  
+}
+.ticket-total {
+  max-height: 150px;
+  overflow-y: auto;
+  width: 200px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 50px;
+  
+}
+.ticket-count-status {
+  max-height: 150px;
+  overflow-y: auto;
+  width: 380px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 50px;
 }
 
 .detalhes-button {
@@ -590,8 +617,10 @@ export default defineComponent({
   color: #496678;
 }
 
+
 .input:focus {
   box-shadow: 0 0 0 0.125em #496678;
+
 }
 
 .modal-card-foot .button {
