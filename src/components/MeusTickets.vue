@@ -5,16 +5,18 @@
       <input class="input filtro box" type="text" v-model="searchQuery"
         placeholder="Procure pelo nome do ticket, setor, etc..." />
       <div class="ticket-total">
-        <Box class="teste" >Total de Tickets: {{ totalTickets }}</Box>
+        <Box class="teste">Total de Tickets: {{ totalTickets }}</Box>
       </div>
       <div class="ticket-count">
-        <Box class="teste"  v-for="category in categories" :key="category.name">
+        <Box class="teste" v-for="category in categories" :key="category.name"
+          @click="toggleSelectedCategory(category.name)"
+          :style="{ backgroundColor: selectedCategory === category.name ? 'lightblue' : '' }">
           {{ category.name }}: {{ categoryCount(category.name) }}
         </Box>
       </div>
 
       <div class="ticket-count-status">
-        <Box class="teste" v-for="status in statuses" :key="status.name" >
+        <Box class="teste" v-for="status in statuses" :key="status.name">
           {{ status.name }}: {{ status.count }}
         </Box>
       </div>
@@ -36,8 +38,8 @@
             <strong class="label">Status:</strong>
             <p class="servico">{{ ticket.status.toLocaleUpperCase() }}</p>
           </div>
-          
-          
+
+
           <div v-if="ticket.atualizado" class="column">
             <strong class="label">Descrição:</strong>
             <p class="servico">{{ ticket.atualizado_newtext }}</p>
@@ -225,6 +227,7 @@ export default defineComponent({
       isDeleteModalOpen: false,
       ticketToDelete: null as string | null,
       isEditModalOpen: false,
+      selectedCategory: null as string | null,
       editedticket: {
         _id: "",
         nomeUsuario: "",
@@ -249,19 +252,22 @@ export default defineComponent({
   },
   computed: {
     filteredtickets(): ITicket[] {
-      if (!this.searchQuery) {
+      if (!this.searchQuery && !this.selectedCategory) {
         return this.fetchedtickets;
       } else {
         const query = this.searchQuery.toLowerCase();
         return this.fetchedtickets.filter((ticket: ITicket) => {
           const { nomeUsuario, setor, servico, data, maquina } = ticket;
-          return (
+          const matchesSearchQuery = (
             nomeUsuario.toLowerCase().includes(query) ||
             setor.toLowerCase().includes(query) ||
             servico.toLowerCase().includes(query) ||
             maquina.toString().includes(query) ||
             data.toLowerCase().includes(query)
           );
+          const matchesCategory = !this.selectedCategory || ticket.setor === this.selectedCategory;
+
+          return matchesSearchQuery && matchesCategory;
         });
       }
     },
@@ -292,6 +298,9 @@ export default defineComponent({
     },
   },
   methods: {
+    toggleSelectedCategory(categoryName: string) {
+      this.selectedCategory = this.selectedCategory === categoryName ? null : categoryName;
+    },
     statusCount(statusName: string): number {
       return this.fetchedtickets.filter((ticket: ITicket) => ticket.status === statusName).length;
     },
@@ -392,7 +401,7 @@ export default defineComponent({
         maquina: "",
         data_hora_att: "",
         atualizado_newtext: "",
-        atualizado: false,      
+        atualizado: false,
       };
     },
     async confirmEditticket() {
@@ -445,6 +454,7 @@ export default defineComponent({
   margin: 10px;
   border: solid 1px #1b53f8;
 }
+
 @media only screen and (max-width: 768px) {
   header {
     padding: 2.5rem;
@@ -553,8 +563,9 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   margin-top: 50px;
-  
+
 }
+
 .ticket-total {
   max-height: 150px;
   overflow-y: auto;
@@ -562,8 +573,9 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   margin-top: 50px;
-  
+
 }
+
 .ticket-count-status {
   max-height: 200px;
   overflow-y: auto;
