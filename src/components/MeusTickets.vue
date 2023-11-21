@@ -5,21 +5,23 @@
       <input class="input filtro box" type="text" v-model="searchQuery"
         placeholder="Procure pelo nome do ticket, setor, etc..." />
       <div class="ticket-total">
-        <Box class="teste">Total de Tickets: {{ totalTickets }}</Box>
+        <Box class="teste" :style="{ backgroundColor: 'aliceblue'}">Total de Tickets: {{ totalTickets }}</Box>
       </div>
       <div class="ticket-count">
         <Box class="teste" v-for="category in categories" :key="category.name"
           @click="toggleSelectedCategory(category.name)"
-          :style="{ backgroundColor: selectedCategory === category.name ? 'lightblue' : '' }">
+          :style="{ backgroundColor: selectedCategory === category.name ? 'lightblue' : 'aliceblue' }">
           {{ category.name }}: {{ categoryCount(category.name) }}
         </Box>
       </div>
 
       <div class="ticket-count-status">
-        <Box class="teste" v-for="status in statuses" :key="status.name">
-          {{ status.name }}: {{ status.count }}
-        </Box>
-      </div>
+  <Box class="teste" v-for="status in statuses" :key="status.name"
+    @click="toggleSelectedStatus(status.name)"
+    :style="{ backgroundColor: selectedStatus === status.name ? 'lightblue' : 'aliceblue' }">
+    {{ status.name }}: {{ status.count }}
+  </Box>
+</div>
     </div>
 
     <div class="client-container">
@@ -228,6 +230,7 @@ export default defineComponent({
       ticketToDelete: null as string | null,
       isEditModalOpen: false,
       selectedCategory: null as string | null,
+      selectedStatus: null as string | null,
       editedticket: {
         _id: "",
         nomeUsuario: "",
@@ -252,7 +255,7 @@ export default defineComponent({
   },
   computed: {
     filteredtickets(): ITicket[] {
-      if (!this.searchQuery && !this.selectedCategory) {
+      if (!this.searchQuery && !this.selectedCategory && !this.selectedStatus) {
         return this.fetchedtickets;
       } else {
         const query = this.searchQuery.toLowerCase();
@@ -266,8 +269,9 @@ export default defineComponent({
             data.toLowerCase().includes(query)
           );
           const matchesCategory = !this.selectedCategory || ticket.setor === this.selectedCategory;
+          const matchesStatus = !this.selectedStatus || ticket.status === this.selectedStatus;
 
-          return matchesSearchQuery && matchesCategory;
+          return matchesSearchQuery && matchesCategory && matchesStatus;
         });
       }
     },
@@ -304,6 +308,13 @@ export default defineComponent({
     statusCount(statusName: string): number {
       return this.fetchedtickets.filter((ticket: ITicket) => ticket.status === statusName).length;
     },
+
+    toggleSelectedStatus(statusName: string) {
+    this.selectedStatus = this.selectedStatus === statusName ? null : statusName;
+  },
+  statusFilter(ticket: ITicket): boolean {
+    return !this.selectedStatus || ticket.status === this.selectedStatus;
+  },
 
     categoryCount(categoryName: string): number {
       return this.fetchedtickets.filter((ticket: ITicket) => ticket.setor === categoryName).length;
