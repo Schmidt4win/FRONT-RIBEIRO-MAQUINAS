@@ -5,19 +5,23 @@
       <input class="input filtro box" type="text" v-model="searchQuery"
         placeholder="Procure pelo nome do ticket, setor, etc..." />
       <div class="ticket-total">
-        <Box>Total de Tickets: {{ totalTickets }}</Box>
+        <Box class="teste" :style="{ backgroundColor: 'aliceblue'}">Total de Tickets: {{ totalTickets }}</Box>
       </div>
       <div class="ticket-count">
-        <Box class="teste" v-for="category in categories" :key="category.name">
+        <Box class="teste" v-for="category in categories" :key="category.name"
+          @click="toggleSelectedCategory(category.name)"
+          :style="{ backgroundColor: selectedCategory === category.name ? 'lightblue' : 'aliceblue' }">
           {{ category.name }}: {{ categoryCount(category.name) }}
         </Box>
       </div>
 
       <div class="ticket-count-status">
-        <Box class="teste" v-for="status in statuses" :key="status.name" >
-          {{ status.name }}: {{ status.count }}
-        </Box>
-      </div>
+  <Box class="teste" v-for="status in statuses" :key="status.name"
+    @click="toggleSelectedStatus(status.name)"
+    :style="{ backgroundColor: selectedStatus === status.name ? 'lightblue' : 'aliceblue' }">
+    {{ status.name }}: {{ status.count }}
+  </Box>
+</div>
     </div>
 
     <div class="client-container">
@@ -36,8 +40,8 @@
             <strong class="label">Status:</strong>
             <p class="servico">{{ ticket.status.toLocaleUpperCase() }}</p>
           </div>
-          
-          
+
+
           <div v-if="ticket.atualizado" class="column">
             <strong class="label">Descrição:</strong>
             <p class="servico">{{ ticket.atualizado_newtext }}</p>
@@ -191,6 +195,17 @@
                 </div>
               </div>
             </div>
+            <div class="field">
+      <label for="status" class="label">Direcionar a:</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select v-model="direcionado" required>
+            <option v-for="user in fetchedUser" :key="user.id">{{ user.name }}</option>
+
+          </select>
+        </div>
+      </div>
+    </div>
           </div>
         </section>
         <footer class="modal-card-foot">
@@ -211,6 +226,7 @@ import Box from "./Box.vue";
 import { TipoNotificacao } from "@/interfaces/INotificação";
 import useNotificador from "@/hooks/notificador";
 import { useStore } from "@/store";
+import IUser from "@/interfaces/IUser"
 
 export default defineComponent({
   name: "ticketTeste",
@@ -219,12 +235,16 @@ export default defineComponent({
   },
   data() {
     return {
+      fetchedUser: [] as IUser[],
       fetchedtickets: [] as ITicket[],
       activeDropdown: null as string | null,
       searchQuery: "",
       isDeleteModalOpen: false,
       ticketToDelete: null as string | null,
       isEditModalOpen: false,
+      selectedCategory: null as string | null,
+      selectedStatus: null as string | null,
+      direcionado: "",
       editedticket: {
         _id: "",
         nomeUsuario: "",
@@ -238,30 +258,37 @@ export default defineComponent({
         data_hora_att: "",
         atualizado_newtext: "",
         atualizado: false,
+        direcionado: "",
       },
     };
   },
   beforeMount() {
     this.fetchticketData();
+    this.fetchticketUser();
   },
   created() {
     this.fetchticketData();
+    this.fetchticketUser();
   },
   computed: {
     filteredtickets(): ITicket[] {
-      if (!this.searchQuery) {
+      if (!this.searchQuery && !this.selectedCategory && !this.selectedStatus) {
         return this.fetchedtickets;
       } else {
         const query = this.searchQuery.toLowerCase();
         return this.fetchedtickets.filter((ticket: ITicket) => {
           const { nomeUsuario, setor, servico, data, maquina } = ticket;
-          return (
+          const matchesSearchQuery = (
             nomeUsuario.toLowerCase().includes(query) ||
             setor.toLowerCase().includes(query) ||
             servico.toLowerCase().includes(query) ||
             maquina.toString().includes(query) ||
             data.toLowerCase().includes(query)
           );
+          const matchesCategory = !this.selectedCategory || ticket.setor === this.selectedCategory;
+          const matchesStatus = !this.selectedStatus || ticket.status === this.selectedStatus;
+
+          return matchesSearchQuery && matchesCategory && matchesStatus;
         });
       }
     },
@@ -292,9 +319,19 @@ export default defineComponent({
     },
   },
   methods: {
+    toggleSelectedCategory(categoryName: string) {
+      this.selectedCategory = this.selectedCategory === categoryName ? null : categoryName;
+    },
     statusCount(statusName: string): number {
       return this.fetchedtickets.filter((ticket: ITicket) => ticket.status === statusName).length;
     },
+
+    toggleSelectedStatus(statusName: string) {
+    this.selectedStatus = this.selectedStatus === statusName ? null : statusName;
+  },
+  statusFilter(ticket: ITicket): boolean {
+    return !this.selectedStatus || ticket.status === this.selectedStatus;
+  },
 
     categoryCount(categoryName: string): number {
       return this.fetchedtickets.filter((ticket: ITicket) => ticket.setor === categoryName).length;
@@ -335,6 +372,16 @@ export default defineComponent({
     openDeleteConfirmation(ticketId: string) {
       this.ticketToDelete = ticketId;
       this.isDeleteModalOpen = true;
+    },
+    async fetchticketUser() {
+      try {
+        const response = await fetch("http://10.1.1.136:3010/users");
+        let data = await response.json();
+        this.fetchedUser = data;
+      } 
+      catch (error) {
+        console.error("Error fetching ticket data:", error);
+      }
     },
     closeDeleteConfirmation() {
       this.ticketToDelete = null;
@@ -385,7 +432,8 @@ export default defineComponent({
         maquina: "",
         data_hora_att: "",
         atualizado_newtext: "",
-        atualizado: false,      
+        atualizado: false,
+        direcionado: "",
       };
     },
     async confirmEditticket() {
@@ -436,7 +484,9 @@ export default defineComponent({
 .teste {
   padding: 1rem;
   margin: 10px;
+  border: solid 1px #1b53f8;
 }
+
 @media only screen and (max-width: 768px) {
   header {
     padding: 2.5rem;
@@ -545,8 +595,9 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   margin-top: 50px;
-  
+
 }
+
 .ticket-total {
   max-height: 150px;
   overflow-y: auto;
@@ -554,8 +605,9 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   margin-top: 50px;
-  
+
 }
+
 .ticket-count-status {
   max-height: 150px;
   overflow-y: auto;

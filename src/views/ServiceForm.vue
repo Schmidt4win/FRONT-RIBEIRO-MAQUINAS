@@ -15,6 +15,17 @@
     </div>
   </div>
 </div>
+<div class="field">
+  <label for="status" class="label">Direcionar a:</label>
+  <div class="control">
+    <div class="select is-fullwidth">
+      <select v-model="direcionado" required>        
+        <option  v-for="user in fetchedUser" :key="user.id">{{ user.name }}</option>
+        
+      </select>
+    </div>
+  </div>
+</div>
     <form @submit.prevent="submitForm" class="form-content">
       <div class="columns is-variable is-2 is-mobile">
         <div class="column is-half">
@@ -124,11 +135,13 @@ import { defineComponent } from "vue";
 import { TipoNotificacao } from "@/interfaces/INotificação";
 import useNotificador from "@/hooks/notificador";
 import { useStore } from "@/store";
+import IUser from "@/interfaces/IUser"
 
 
 export default defineComponent({
   data() {
     return {
+      fetchedUser: [] as IUser[],
       nomeUsuario: "",
       setor: "",
       servico: "",
@@ -136,12 +149,27 @@ export default defineComponent({
       maquina: "",
       solucao: "",
       status: "",
+      direcionado: "",
       authData: {
         username: "",
       },
     };
   },
   methods: {
+    async fetchticketUser() {
+      try {
+              
+          
+          const response = await fetch("http://10.1.1.136:3010/users");
+          let data = await response.json();
+                   
+
+          this.fetchedUser = data;
+        
+      } catch (error) {
+        console.error("Error fetching ticket data:", error);
+      }
+    },
     submitForm(): void {
       const authData = localStorage.getItem("authData");
   if (authData === null) {
@@ -162,6 +190,7 @@ export default defineComponent({
         solucao: this.solucao,
         status: this.status,
         user: user,
+        direcionado: this.direcionado,
                 
       };
 
@@ -201,7 +230,14 @@ export default defineComponent({
       this.solucao = "";
       this.setor = "";
       this.status = "";
+      this.status = "";
     },
+  },
+  beforeMount() {
+    this.fetchticketUser();
+  },
+  created() {
+    this.fetchticketUser();
   },
   setup() {
     const store = useStore();

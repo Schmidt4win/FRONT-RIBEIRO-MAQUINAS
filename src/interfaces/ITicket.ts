@@ -12,4 +12,5 @@ export default interface ITicket {
     atualizado: boolean ;
     atualizado_newtext: string;
     user: string;
+    direcionado: string;
   }

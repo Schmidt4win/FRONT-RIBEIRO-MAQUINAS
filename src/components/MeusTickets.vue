@@ -195,6 +195,17 @@
                 </div>
               </div>
             </div>
+            <div class="field">
+      <label for="status" class="label">Direcionar a:</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select v-model="direcionado" required>
+            <option v-for="user in fetchedUser" :key="user.id">{{ user.name }}</option>
+
+          </select>
+        </div>
+      </div>
+    </div>
           </div>
         </section>
         <footer class="modal-card-foot">
@@ -215,6 +226,7 @@ import Box from "./Box.vue";
 import { TipoNotificacao } from "@/interfaces/INotificação";
 import useNotificador from "@/hooks/notificador";
 import { useStore } from "@/store";
+import IUser from "@/interfaces/IUser"
 
 export default defineComponent({
   name: "ticketTeste",
@@ -223,6 +235,7 @@ export default defineComponent({
   },
   data() {
     return {
+      fetchedUser: [] as IUser[],
       fetchedtickets: [] as ITicket[],
       activeDropdown: null as string | null,
       searchQuery: "",
@@ -231,6 +244,7 @@ export default defineComponent({
       isEditModalOpen: false,
       selectedCategory: null as string | null,
       selectedStatus: null as string | null,
+      direcionado: "",
       editedticket: {
         _id: "",
         nomeUsuario: "",
@@ -244,14 +258,17 @@ export default defineComponent({
         data_hora_att: "",
         atualizado_newtext: "",
         atualizado: false,
+        direcionado: "",
       },
     };
   },
   beforeMount() {
     this.fetchticketData();
+    this.fetchticketUser();
   },
   created() {
     this.fetchticketData();
+    this.fetchticketUser();
   },
   computed: {
     filteredtickets(): ITicket[] {
@@ -329,7 +346,9 @@ export default defineComponent({
           const response = await fetch("http://10.1.1.136:3010/ticketget");
           let data = await response.json();
           // Filter tickets based on the authenticated user
-          data = data.filter((ticket: { user: string }) => ticket.user === username);
+          data = data.filter((ticket: ITicket) => {
+        return ticket.user === username || ticket.direcionado === username;
+      });
 
           this.fetchedtickets = data;
         }
@@ -362,6 +381,16 @@ export default defineComponent({
     openDeleteConfirmation(ticketId: string) {
       this.ticketToDelete = ticketId;
       this.isDeleteModalOpen = true;
+    },
+    async fetchticketUser() {
+      try {
+        const response = await fetch("http://10.1.1.136:3010/users");
+        let data = await response.json();
+        this.fetchedUser = data;
+      } 
+      catch (error) {
+        console.error("Error fetching ticket data:", error);
+      }
     },
     closeDeleteConfirmation() {
       this.ticketToDelete = null;
@@ -413,6 +442,7 @@ export default defineComponent({
         data_hora_att: "",
         atualizado_newtext: "",
         atualizado: false,
+        direcionado: "",
       };
     },
     async confirmEditticket() {
@@ -588,7 +618,7 @@ export default defineComponent({
 }
 
 .ticket-count-status {
-  max-height: 200px;
+  max-height: 150px;
   overflow-y: auto;
   width: 380px;
   display: flex;

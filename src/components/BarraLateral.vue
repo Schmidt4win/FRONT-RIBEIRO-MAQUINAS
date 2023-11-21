@@ -20,7 +20,7 @@
         </li>
         <li>
           <RouterLink to="/meuticket" class="link">
-            <i class="fas fa-users"></i> Meus Tickets
+            <i class="fa fa-ticket" aria-hidden="true"></i> Meus Tickets
           </RouterLink>
         </li>
         <!-- <li>
@@ -84,12 +84,13 @@ header {
 
 .panel ul {
   list-style: none;
-  padding: 0;
+  padding: 1.25rem;
   margin: 0;
 }
 
 .panel li {
   margin: 8px 0;
+  padding: 0.50rem;
 }
 
 .link {
