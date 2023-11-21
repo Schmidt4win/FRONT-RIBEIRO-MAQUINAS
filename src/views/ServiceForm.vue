@@ -2,42 +2,37 @@
   <div class="container form-container">
     <h1 class="title is-4 has-text-centered mb-5">Cadastro de Serviço</h1>
     <div class="field">
-  <label for="status" class="label">Status:</label>
-  <div class="control">
-    <div class="select is-fullwidth">
-      <select v-model="status" required>
-        <option disabled value="">Selecione o status</option>
-        <option>Em Validação</option>
-        <option>Resolvido</option>
-        <option>Em Andamento</option>
-        <option>Aguardando Pixeon</option>
-      </select>
+      <label for="status" class="label">Status:</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select v-model="status" required>
+            <option disabled value="">Selecione o status</option>
+            <option>Em Validação</option>
+            <option>Resolvido</option>
+            <option>Em Andamento</option>
+            <option>Aguardando Pixeon</option>
+          </select>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<div class="field">
-  <label for="status" class="label">Direcionar a:</label>
-  <div class="control">
-    <div class="select is-fullwidth">
-      <select v-model="direcionado" required>        
-        <option  v-for="user in fetchedUser" :key="user.id">{{ user.name }}</option>
-        
-      </select>
+    <div class="field">
+      <label for="status" class="label">Direcionar a:</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select v-model="direcionado" required>
+            <option v-for="user in fetchedUser" :key="user.id">{{ user.name }}</option>
+
+          </select>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
     <form @submit.prevent="submitForm" class="form-content">
       <div class="columns is-variable is-2 is-mobile">
         <div class="column is-half">
           <div class="field">
             <label for="nomeCliente" class="label">Usuario:</label>
             <div class="control">
-              <input
-                type="text"
-                class="input is-flexible"
-                v-model="nomeUsuario"
-                required
-              />
+              <input type="text" class="input is-flexible" v-model="nomeUsuario" required />
             </div>
           </div>
         </div>
@@ -45,12 +40,7 @@
           <div class="field">
             <label for="cidade" class="label">Setor:</label>
             <div class="control">
-              <input
-                type="text"
-                class="input is-flexible"
-                v-model="setor"
-                required
-              />
+              <input type="text" class="input is-flexible" v-model="setor" required />
             </div>
           </div>
         </div>
@@ -61,30 +51,20 @@
           <div class="field">
             <label for="servico" class="label">Descrição:</label>
             <div class="control">
-              <input
-                type="text"
-                class="input is-flexible"
-                v-model="servico"
-                required
-              />
+              <input type="text" class="input is-flexible" v-model="servico" required />
             </div>
           </div>
         </div>
-     
+
         <div class="column is-half">
           <div class="field">
             <label for="servico" class="label">Solução:</label>
             <div class="control">
-              <input
-                type="text"
-                class="input is-flexible"
-                v-model="solucao"
-                required
-              />
+              <input type="text" class="input is-flexible" v-model="solucao" required />
             </div>
-         
+
           </div>
-         
+
         </div>
       </div>
 
@@ -93,12 +73,7 @@
           <div class="field">
             <label for="data" class="label">Data:</label>
             <div class="control">
-              <input
-                type="date"
-                class="input is-flexible"
-                v-model="data"
-                required
-              />
+              <input type="date" class="input is-flexible" v-model="data" required />
             </div>
           </div>
         </div>
@@ -106,25 +81,20 @@
           <div class="field">
             <label for="cidade" class="label">Conf da Maquina/Sistema:</label>
             <div class="control">
-              <input
-                type="text"
-                class="input is-flexible"
-                v-model="maquina"
-                required
-              />
+              <input type="text" class="input is-flexible" v-model="maquina" required />
             </div>
           </div>
         </div>
-        
-       
+
+
       </div>
-      
+
 
       <div class="field is-grouped is-grouped-left">
         <div class="control">
           <button type="submit" class="button is-primary">Enviar</button>
         </div>
-        
+
       </div>
     </form>
   </div>
@@ -158,28 +128,24 @@ export default defineComponent({
   methods: {
     async fetchticketUser() {
       try {
-              
-          
-          const response = await fetch("http://10.1.1.136:3010/users");
-          let data = await response.json();
-                   
-
-          this.fetchedUser = data;
-        
-      } catch (error) {
+        const response = await fetch("http://10.1.1.136:3010/users");
+        let data = await response.json();
+        this.fetchedUser = data;
+      } 
+      catch (error) {
         console.error("Error fetching ticket data:", error);
       }
     },
     submitForm(): void {
       const authData = localStorage.getItem("authData");
-  if (authData === null) {
-    console.error("Authentication data is missing from localStorage.");
-    return;
-  }
-  const { username } = JSON.parse(authData)
+      if (authData === null) {
+        console.error("Authentication data is missing from localStorage.");
+        return;
+      }
+      const { username } = JSON.parse(authData)
 
-  const user = username ?? "Unknown User";
-  console.log(user);
+      const user = username ?? "Unknown User";
+      console.log(user);
       const data = {
         nomeUsuario: this.nomeUsuario,
         setor: this.setor,
@@ -191,7 +157,7 @@ export default defineComponent({
         status: this.status,
         user: user,
         direcionado: this.direcionado,
-                
+
       };
 
       console.log(data);
@@ -279,6 +245,7 @@ export default defineComponent({
 .input:focus {
   box-shadow: 0 0 0 0.125em #496678;
 }
+
 .container {
   max-width: 400px;
   margin: 60px auto;

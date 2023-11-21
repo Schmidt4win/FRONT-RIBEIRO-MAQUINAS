@@ -26,11 +26,18 @@
       </div>
     </div>
   </div>
+
+  <div class="notification" :class="{ 'show-notification': errorMessage }">
+    {{ errorMessage }}
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import axios from 'axios';
+import { TipoNotificacao } from "@/interfaces/INotificação";
+import useNotificador from "@/hooks/notificador";
+import { useStore } from "@/store";
 
 export default defineComponent({
   name: "LoginVue",
@@ -39,6 +46,7 @@ export default defineComponent({
       name: '',
       password: '',
       category: '',
+      errorMessage: '',
     };
   },
   methods: {
@@ -52,8 +60,6 @@ export default defineComponent({
           }
         );
         if (response.status === 201) {
-          
-
           // Save token and username in local storage
           const token = response.data.token;
           const username = response.data.name;
@@ -64,20 +70,61 @@ export default defineComponent({
             expiration: expiration,
           };
           localStorage.setItem('authData', JSON.stringify(authData));
-          console.log(authData)
 
-          // Redirect to home route
+          // Redirect to the home route
           this.$router.push('/');
         }
       } catch (error) {
         console.error(error);
+        this.showErrorMessage('Usuario ou Senha invalidos, tente novamente');
       }
     },
+    showErrorMessage(message: string) {
+      this.errorMessage = message;
+      setTimeout(() => {
+        this.errorMessage = '';
+      }, 3000); // Hide the error message after 3 seconds
+    },
+  
+  },
+  setup() {
+    const store = useStore();
+    const { notificar } = useNotificador();
+    return {
+      store,
+      notificar,
+    };
   },
 });
 </script>
 
 <style scoped>
+
+.notification {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background-color: #e96d13;
+  color: aliceblue;
+  padding: 1rem 2rem;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.show-notification {
+  opacity: 1;
+  visibility: visible;
+}
+
+
 .login-container {
   display: flex;
   justify-content: center;
@@ -88,7 +135,7 @@ export default defineComponent({
 }
 
 .login-card {
-  width: 400px;
+  width: 500px;
   padding: 1.25rem;
   background-color: aliceblue;
   border-radius: 10px;

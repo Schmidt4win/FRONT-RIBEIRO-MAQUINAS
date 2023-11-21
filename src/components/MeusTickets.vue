@@ -228,6 +228,9 @@ import useNotificador from "@/hooks/notificador";
 import { useStore } from "@/store";
 import IUser from "@/interfaces/IUser"
 
+let intervalId: any = null;
+
+
 export default defineComponent({
   name: "ticketTeste",
   components: {
@@ -262,6 +265,9 @@ export default defineComponent({
       },
     };
   },
+  beforeUnmount() {
+    clearInterval(intervalId) 
+  },
   beforeMount() {
     this.fetchticketData();
     this.fetchticketUser();
@@ -270,6 +276,11 @@ export default defineComponent({
     this.fetchticketData();
     this.fetchticketUser();
   },
+  
+  mounted() {
+    this.fetchticketData();
+    this.iniciarAtualizacaoAutomatica();
+  },
   computed: {
     filteredtickets(): ITicket[] {
       if (!this.searchQuery && !this.selectedCategory && !this.selectedStatus) {
@@ -277,9 +288,10 @@ export default defineComponent({
       } else {
         const query = this.searchQuery.toLowerCase();
         return this.fetchedtickets.filter((ticket: ITicket) => {
-          const { nomeUsuario, setor, servico, data, maquina } = ticket;
+          const { nomeUsuario, setor, servico, data, maquina, atualizado_newtext } = ticket;
           const matchesSearchQuery = (
             nomeUsuario.toLowerCase().includes(query) ||
+            atualizado_newtext && atualizado_newtext.toLowerCase().includes(query) ||
             setor.toLowerCase().includes(query) ||
             servico.toLowerCase().includes(query) ||
             maquina.toString().includes(query) ||
@@ -319,6 +331,14 @@ export default defineComponent({
     },
   },
   methods: {
+    iniciarAtualizacaoAutomatica() {
+      clearInterval(intervalId);
+
+      intervalId = setInterval(async () => {
+        await this.fetchticketData();
+        console.log("att ticketos" )
+      }, 60000);
+    },
     toggleSelectedCategory(categoryName: string) {
       this.selectedCategory = this.selectedCategory === categoryName ? null : categoryName;
     },
