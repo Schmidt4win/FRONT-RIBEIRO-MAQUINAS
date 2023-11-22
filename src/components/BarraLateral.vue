@@ -25,7 +25,12 @@
         </li>
         <li>
           <RouterLink to="/relcirur" class="link">
-            <i class="fa fa-ticket" aria-hidden="true"></i> Meus Tickets
+            <i class="fa fa-file-text" aria-hidden="true"></i> Rel. Cirurgia
+          </RouterLink>
+        </li>
+        <li>
+          <RouterLink to="/teste" class="link">
+            <i class="fa fa-file-text" aria-hidden="true"></i> teste
           </RouterLink>
         </li>
         <!-- <li>
