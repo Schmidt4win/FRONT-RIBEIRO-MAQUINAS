@@ -14,10 +14,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="cirurgia in filteredCirurgias"
-              :key="cirurgia.RCI_DTHR_INI"
-            >
+            <tr v-for="cirurgia in filteredCirurgias" :key="cirurgia.id">
               <td>{{ formatDateTime(cirurgia.RCI_DTHR_INI) }}</td>
               <td>{{ formatDateTime(cirurgia.RCI_DTHR_FIM) }}</td>
               <td>
@@ -32,8 +29,11 @@
           </tbody>
         </table>
       </div>
-      <div>Quantidade de Cirurgias: {{ filteredCirurgias.length }}</div>
-      <div>Médico Mais Recorrente no Período: {{ mostFrequentDoctor }}</div>
+      <div>
+        <p>Quantidade de Cirurgias: {{ filteredCirurgias.length }}</p>
+        <p>Médico Mais Recorrente no Período: {{ mostFrequentDoctor }}</p>
+    </div>
+      
       <div>Cirurgia Mais Recorrente no Período: {{ mostFrequentProcedure }}</div>
       <div>
         Média de Tempo entre Cirurgias (Geral):
@@ -169,32 +169,50 @@
           const cirurgiaDate = new Date(cirurgia.RCI_DTHR_INI);
           return cirurgiaDate >= startDate && cirurgiaDate <= endDate;
         });
-  
+        console.log(this.filteredCirurgias)
         this.sortCirurgiasByDateTime(); // Ordena os dados pela data e hora
         this.findMostFrequentDoctor();
         this.findMostFrequentProcedure();
         this.calculateAverageTimeBetweenSurgeries();
+        
       },
   
       sortCirurgiasByDateTime() {
+        console.log(this.filteredCirurgias)
         this.filteredCirurgias.sort((a, b) => {
           const dateA = new Date(a.RCI_DTHR_INI).getTime();
           const dateB = new Date(b.RCI_DTHR_INI).getTime();
           return dateA - dateB;
+          
         });
       },
   
       fetchCirurgias() {
-        fetch("http://10.1.1.136:3010/cirurgia")
-          .then((response) => response.json())
-          .then((data) => {
-            this.cirurgias = data;
-            this.filteredCirurgias = data; // Exibir todos os dados inicialmente
-          })
-          .catch((error) => {
-            console.error("Erro ao obter as cirurgias:", error);
-          });
-      },
+  fetch("http://10.1.1.136:3010/cirurgia")
+    .then((response) => response.json())
+    .then((data) => {
+      data.forEach((cirurgia: any, index: any) => {
+        cirurgia.id = index + 1;
+      });
+
+      // Ordenar os dados pela data de início antes de atribuir
+      data.sort((a: any, b: any) => {
+        const dateA = new Date(a.RCI_DTHR_INI).getTime();
+        const dateB = new Date(b.RCI_DTHR_INI).getTime();
+        return dateA - dateB;
+      });
+
+      this.cirurgias = data;
+      this.filteredCirurgias = data;
+      this.findMostFrequentDoctor();
+      this.findMostFrequentProcedure();
+      this.calculateAverageTimeBetweenSurgeries();
+    })
+    .catch((error) => {
+      console.error("Erro ao obter as cirurgias:", error);
+    });
+},
+
   
       formatDateTime(dateString: string): string {
         const date = new Date(dateString);
