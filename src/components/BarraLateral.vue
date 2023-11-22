@@ -23,6 +23,11 @@
             <i class="fa fa-ticket" aria-hidden="true"></i> Meus Tickets
           </RouterLink>
         </li>
+        <li>
+          <RouterLink to="/relcirur" class="link">
+            <i class="fa fa-ticket" aria-hidden="true"></i> Meus Tickets
+          </RouterLink>
+        </li>
         <!-- <li>
           <RouterLink to="/filtro" class="link">
             <i class="fa-sharp fa-solid fa-filter"></i> Filtro

@@ -7,6 +7,7 @@ import Login from "../views/Login.vue";
 import Cliente from "../components/Cliente.vue";
 import FiltroVue from "../components/FiltroVue.vue";
 import meuTicket from "../components/MeusTickets.vue"
+import ListaCirurgias from "../components/RelatorioCirurgia.vue"
 
 
 
@@ -41,7 +42,12 @@ const rotas: RouteRecordRaw[] = [
         path: "/meuticket",
         name: "meuticket",
         component: meuTicket,
-      },       
+      },
+      {
+        path: "/relcirur",
+        name: "relcirur",
+        component: ListaCirurgias,
+      },        
       ]
   },
   {
