@@ -33,6 +33,11 @@
             <i class="fa fa-file-text" aria-hidden="true"></i> teste
           </RouterLink>
         </li>
+        <li>
+          <RouterLink to="/testetuto" class="link">
+            <i class="fa fa-file-text" aria-hidden="true"></i> Tuto
+          </RouterLink>
+        </li>
         <!-- <li>
           <RouterLink to="/filtro" class="link">
             <i class="fa-sharp fa-solid fa-filter"></i> Filtro
