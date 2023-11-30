@@ -63,16 +63,22 @@ export default defineComponent({
           // Save token and username in local storage
           const token = response.data.token;
           const username = response.data.name;
+          const category = response.data.category;
           const expiration = new Date().getTime() + 2 * 60 * 60 * 1000; // 2 hours from now
           const authData = {
             token: token,
             username: username,
             expiration: expiration,
+            category: category,
           };
           localStorage.setItem('authData', JSON.stringify(authData));
-
+          this.category = response.data.category;
+          if (this.category === 'TUT') {
+            this.$router.push('/tutorial')
+          } else {
           // Redirect to the home route
           this.$router.push('/');
+          }
         }
       } catch (error) {
         console.error(error);
@@ -160,12 +166,12 @@ export default defineComponent({
 .button {
   border: 1px solid #e96d13;
   background-color: #496678;
-  color: #e96d13;
+  color: aliceblue;
   transition: background-color 0.3s, color 0.3s;
 }
 
 .button:hover {
-  background-color: aliceblue;
+  background-color: lightblue;
   color: #496678;
 }
 

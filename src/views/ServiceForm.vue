@@ -1,6 +1,6 @@
 <template>
   <div class="container form-container">
-    <h1 class="title is-4 has-text-centered mb-5">Cadastro de Serviço</h1>
+    <h1 class="title is-4 has-text-centered mb-5">Cadastro de Ticket</h1>
     <div class="field">
       <label for="status" class="label">Status:</label>
       <div class="control">
@@ -213,6 +213,19 @@ export default defineComponent({
       notificar,
     };
   },
+  mounted() {
+    const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    
+    if (authData && (authData.category === 'ADM' || authData.category === 'USR')) {
+      this.fetchticketUser()
+    } else {
+      // Emite um alerta na tela
+      alert('Acesso permitido apenas para usuários do tipo "ADM"');
+
+      // Redireciona para a rota /ticket
+      this.$router.push('/tutorial'); // Substitua '/ticket' pela rota desejada
+    }
+    },
 });
 </script>
 

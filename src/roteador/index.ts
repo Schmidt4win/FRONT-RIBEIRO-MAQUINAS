@@ -7,7 +7,7 @@ import Login from "../views/Login.vue";
 import Cliente from "../components/Cliente.vue";
 import FiltroVue from "../components/FiltroVue.vue";
 import meuTicket from "../components/MeusTickets.vue"
-import ListaCirurgias from "../components/RelatorioCirurgia.vue"
+import ListafilaNovo from "../components/FilaRelatorio.vue"
 import ListaCirurgiasNovo from "../components/RelatorioNew.vue"
 import TutorialInternacao from "../components/TutoInter.vue"
 
@@ -21,16 +21,16 @@ const rotas: RouteRecordRaw[] = [
     path: "/",
     name: "Home",
     component: HomeView,
-    redirect: '/cliente',
+    redirect: '/tutorial',
     children:
       [        
       {
-        path: "/cliente",
+        path: "/tickets",
         name: "Cliente",
         component: Cliente,
       },
       {
-        path: "/serviço",
+        path: "/ticket",
         name: "Serviço",
         component: ServiceForm,
       },
@@ -45,9 +45,9 @@ const rotas: RouteRecordRaw[] = [
         component: meuTicket,
       },
       {
-        path: "/relcirur",
-        name: "relcirur",
-        component: ListaCirurgias,
+        path: "/fila",
+        name: "fila",
+        component: ListafilaNovo,
       },
       {
         path: "/teste",
@@ -55,7 +55,7 @@ const rotas: RouteRecordRaw[] = [
         component: ListaCirurgiasNovo,
       }, 
       {
-        path: "/testetuto",
+        path: "/tutorial",
         name: "testetutorial",
         component: TutorialInternacao,
       },       

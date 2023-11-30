@@ -8,34 +8,35 @@
     </button> -->
     <nav class="panel mt-5">
       <ul>
-        <li>
-          <RouterLink to="/serviço" class="link">
+        <li v-if="categoria === 'ADM' ">
+          <RouterLink to="/ticket" class="link">
             <i class="fas fa-pen"></i> Cadastro de Ticket
           </RouterLink>
         </li>
-        <li>
-          <RouterLink to="/cliente" class="link">
-            <i class="fas fa-users"></i> Tickets
+        <li v-if="categoria === 'ADM' " >
+          
+          <RouterLink to="/tickets" class="link">
+             <i class="fa fa-ticket" aria-hidden="true"></i>Tickets
           </RouterLink>
         </li>
-        <li>
+        <li v-if="categoria === 'ADM'">
           <RouterLink to="/meuticket" class="link">
             <i class="fa fa-ticket" aria-hidden="true"></i> Meus Tickets
           </RouterLink>
         </li>
-        <li>
-          <RouterLink to="/relcirur" class="link">
+        <li v-if="categoria === 'ADM' || categoria === 'USR'">
+          <RouterLink to="/teste" class="link">
             <i class="fa fa-file-text" aria-hidden="true"></i> Rel. Cirurgia
           </RouterLink>
         </li>
-        <li>
-          <RouterLink to="/teste" class="link">
-            <i class="fa fa-file-text" aria-hidden="true"></i> teste
+        <li v-if="categoria === 'ADM' || categoria === 'USR'">
+          <RouterLink to="/fila" class="link">
+            <i class="fas fa-users"></i> Fila
           </RouterLink>
         </li>
-        <li>
-          <RouterLink to="/testetuto" class="link">
-            <i class="fa fa-file-text" aria-hidden="true"></i> Tuto
+        <li v-if="categoria === 'ADM' || categoria === 'TUT' || categoria === 'USR'">
+          <RouterLink to="/tutorial" class="link">
+            <i class="fa fa-file-text" aria-hidden="true"></i> Tutorial
           </RouterLink>
         </li>
         <!-- <li>
@@ -132,7 +133,7 @@ header {
 
 .logout-button:hover {
   background-color: aliceblue;
-  color: #faf0ca;
+  color: black;
 }
 </style>
 
@@ -146,9 +147,25 @@ export default defineComponent({
   emits: ['aoTemaAlterado'],
   data () {
     return {
-      modoEscuroAtivo: true
+      modoEscuroAtivo: true,
+      categoria: '', // Propriedade para armazenar a categoria do usuário
     }
   },
+
+  created() {
+  // Access localStorage to obtain the user's category
+  const authDataString = localStorage.getItem('authData');
+  if (authDataString !== null) {
+    const authData = JSON.parse(authDataString);
+    this.categoria = authData.category; // Assuming category is present in the authentication data
+  } else {
+    // Handle the case when 'authData' is null (optional)
+    // For instance, setting a default category or redirecting to login
+    this.categoria = 'TUT' || 'USR';
+    // Or redirecting to login
+    // this.$router.push('/login');
+  }
+},
   computed: {
     textoBotao () {
       if (this.modoEscuroAtivo) {
@@ -157,6 +174,7 @@ export default defineComponent({
       return "Ativar Modo Escuro"
     }
   },
+
   methods: {
     alterarTema() {
       this.modoEscuroAtivo = !this.modoEscuroAtivo

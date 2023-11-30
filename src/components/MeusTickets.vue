@@ -278,8 +278,20 @@ export default defineComponent({
   },
   
   mounted() {
-    this.fetchticketData();
-    this.iniciarAtualizacaoAutomatica();
+    const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    
+    if (authData && (authData.category === 'ADM' || authData.category === 'USR')) {
+      this.fetchticketData();
+    this.iniciarAtualizacaoAutomatica(); // Executa a função se for um ADM
+    } else {
+      // Emite um alerta na tela
+      alert('Acesso permitido apenas para usuários do tipo "ADM"');
+
+      // Redireciona para a rota /ticket
+      this.$router.push('/tutorial'); // Substitua '/ticket' pela rota desejada
+    }
+    
+    
   },
   computed: {
     filteredtickets(): ITicket[] {

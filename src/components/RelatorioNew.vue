@@ -231,7 +231,17 @@
     },
   
     mounted() {
-      this.fetchCirurgias();
+      const authData = JSON.parse(localStorage.getItem('authData') || '{}');
+    
+    if (authData && (authData.category === 'ADM' || authData.category === 'USR')) {
+      this.fetchCirurgias(); // Executa a função se for um ADM
+    } else {
+      // Emite um alerta na tela
+      alert('Acesso permitido apenas para usuários do tipo "ADM"');
+
+      // Redireciona para a rota /ticket
+      this.$router.push('/tutorial'); // Substitua '/ticket' pela rota desejada
+    }
     },
   });
   </script>
@@ -243,7 +253,7 @@
   }
   
   .container-tabela {
-    max-height: 900px;
+    max-height: 600px;
     overflow-y: auto;
   }
   
