@@ -40,10 +40,8 @@
     </Box>
     <Box class="box">
       <div>Setor Mais Recorrente: {{ mostFrequentProcedure }}</div>
-      <!-- <div>
-      Média de Tempo Fila (Geral):
-      {{ averageTimeBetweenSurgeries }} minutos
-    </div> -->
+      <p>Média de Tempo Fila (Geral): {{ averageDuration }}</p>
+      
       <div>
         Status do Atendimento:
         Esperando (A), Em Atendimento (E), Em Procedimento (P), Atendimento Concluído (X) e Cancelado (Z).
@@ -86,6 +84,7 @@ export default defineComponent({
       mostFrequentDoctor: "" as string,
       mostFrequentProcedure: "" as string,
       averageTimeBetweenSurgeries: 0 as number,
+      averageDuration: '0h 0min' as string,
       statusCount: {
         Esperando: 0,
         'Em Atendimento': 0,
@@ -107,6 +106,26 @@ export default defineComponent({
   },
 
   methods: {
+    calculateAverageDuration() {
+  let totalDurationInMinutes = 0;
+
+  // Iterar sobre cada fila para somar a duração em minutos
+  this.filteredfila.forEach((fila) => {
+    const [hours, minutes] = fila.duracao.split(' ')[0].split('h ');
+    totalDurationInMinutes += parseInt(hours) * 60 + parseInt(minutes);
+  });
+
+  // Calcular a média total
+  const totalFila = this.filteredfila.length;
+  if (totalFila > 0) {
+    const averageMinutes = totalDurationInMinutes / totalFila;
+    const averageHours = Math.floor(averageMinutes / 60);
+    const remainingMinutes = Math.floor(averageMinutes % 60);
+    this.averageDuration = `${averageHours}h ${remainingMinutes}min`;
+  } else {
+    this.averageDuration = '0h 0min';
+  }
+},
     calculateDuration(startTime: string, endTime: string): string {
       const startDate = new Date(startTime);
       const endDate = new Date(endTime);
